@@ -4,11 +4,6 @@ const ACCOUNTS = [
   { id: 'shao', name: 'Шао' }
 ];
 
-const LOCATIONS = [
-  { id: 'sea', name: 'Море' },
-  { id: 'river', name: 'Река' }
-];
-
 const CATEGORIES = {
   text:     { name: 'Текстовый',      color: '#b8ddf0' },
   neutral:  { name: 'Нейтральный',    color: '#c0ded6' },
@@ -84,7 +79,6 @@ async function init() {
   ACCOUNTS.forEach(a => { if (!Array.isArray(data[a.id])) data[a.id] = []; });
   catalog.notes = normalizeNotes(catalog.notes);
   renderAccounts();
-  renderLocations();
   renderCatalogSelect();
   updateToggles();
   render();
@@ -226,7 +220,7 @@ function removeNote(index) {
   renderNotesList();
 }
 
-// ===== Аккаунты и Локации (для добавления) =====
+// ===== Аккаунты =====
 function renderAccounts() {
   const nav = document.getElementById('accounts');
   nav.innerHTML = ACCOUNTS.map(a => `
@@ -245,17 +239,9 @@ function switchAccount(id) {
   }
 }
 
-function renderLocations() {
-  const nav = document.getElementById('locations');
-  nav.innerHTML = LOCATIONS.map(l => `
-    <button class="${l.id === addLocation ? 'active' : ''}"
-            onclick="switchAddLocation('${l.id}')">${l.name}</button>
-  `).join('');
-}
-
+// ===== Выбор локации для добавления =====
 function switchAddLocation(id) {
   addLocation = id;
-  renderLocations();
   renderCatalogSelect(); // обновляем выпадающий список лута
 }
 
