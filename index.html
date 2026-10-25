@@ -20,8 +20,16 @@
             <input type="file" id="fileInput" accept=".json" hidden>
           </label>
         </div>
+
+        <label class="location-picker">
+          <span>Вид ныряния:</span>
+          <select id="locationSelect" onchange="switchAddLocation(this.value)">
+            <option value="sea">Морское</option>
+            <option value="river">Речное</option>
+          </select>
+        </label>
+
         <nav class="accounts" id="accounts"></nav>
-        <nav class="locations" id="locations"></nav>
       </div>
     </header>
 
@@ -93,6 +101,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
 </body>
 </html>
