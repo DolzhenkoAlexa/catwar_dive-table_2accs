@@ -67,17 +67,40 @@ header h1 {
   flex-wrap: wrap;
 }
 
-/* аккаунты и локации */
-.accounts, .locations {
+/* выбор локации */
+.location-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.location-picker select {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.location-picker select:hover,
+.location-picker select:focus {
+  border-color: var(--accent);
+}
+
+/* аккаунты */
+.accounts {
   display: flex;
   gap: 6px;
 }
 
-.locations {
-  margin-left: 10px;
-}
-
-.accounts button, .locations button {
+.accounts button {
   padding: 6px 18px;
   border: 2px solid var(--border);
   background: var(--card);
@@ -88,12 +111,9 @@ header h1 {
   transition: all 0.15s;
 }
 
-.accounts button:hover, .locations button:hover {
-  border-color: var(--accent); 
-  color: var(--accent-dark); 
-}
+.accounts button:hover { border-color: var(--accent); color: var(--accent-dark); }
 
-.accounts button.active, .locations button.active {
+.accounts button.active {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
@@ -715,11 +735,9 @@ button.primary:hover { background: var(--accent-dark); }
     gap: 0.5rem;
   }
 
-  .accounts, .locations { 
-    justify-content: center; 
-    margin-left: 0;
-  }
-  
+  .location-picker { justify-content: center; }
+
+  .accounts { justify-content: center; }
   .files-row { justify-content: center; }
 
   .layout { grid-template-columns: 1fr; }
