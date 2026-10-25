@@ -3,41 +3,49 @@
     {
       "catalogId": "neg_jelly",
       "category": "negative",
+      "location": "sea",
       "at": "2026-10-11T02:59:13.463Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:59:10.294Z"
     },
     {
       "catalogId": "neu_sigan",
       "category": "neutral",
+      "location": "sea",
       "at": "2026-10-11T02:58:51.919Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:58:44.912Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:58:44.518Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:58:43.726Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:58:43.590Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:58:43.454Z"
     }
   ],
@@ -45,51 +53,61 @@
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T03:00:15.382Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T03:00:15.247Z"
     },
     {
       "catalogId": "neg_ray_1",
       "category": "negative",
+      "location": "sea",
       "at": "2026-10-11T03:00:12.495Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T03:00:05.416Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T03:00:05.118Z"
     },
     {
       "catalogId": "neg_crab_1",
       "category": "negative",
+      "location": "sea",
       "at": "2026-10-11T02:59:44.007Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:59:32.672Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:59:32.143Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:59:31.695Z"
     },
     {
       "catalogId": "txt_generic",
       "category": "text",
+      "location": "sea",
       "at": "2026-10-11T02:59:31.551Z"
     }
   ]
