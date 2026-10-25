@@ -4,6 +4,11 @@ const ACCOUNTS = [
   { id: 'shao', name: 'Шао' }
 ];
 
+const LOCATIONS = [
+  { id: 'sea', name: 'Море' },
+  { id: 'river', name: 'Река' }
+];
+
 const CATEGORIES = {
   text:     { name: 'Текстовый',      color: '#b8ddf0' },
   neutral:  { name: 'Нейтральный',    color: '#c0ded6' },
@@ -59,6 +64,7 @@ const IMAGES_DIR  = 'images/';
 let catalog = { notes: {}, text: [], neutral: [], positive: [], super: [], negative: [] };
 let data = {};
 let currentAccount = ACCOUNTS[0].id;
+let currentLocation = 'sea';
 let pieChart = null;
 let negGrouped = true;
 let posGrouped = true;
@@ -74,6 +80,7 @@ async function init() {
   ACCOUNTS.forEach(a => { if (!Array.isArray(data[a.id])) data[a.id] = []; });
   catalog.notes = normalizeNotes(catalog.notes);
   renderAccounts();
+  renderLocations();
   renderCatalogSelect();
   updateToggles();
   render();
@@ -107,8 +114,6 @@ async function loadData() {
 }
 
 // ===== Заметки: нормализация формата =====
-// Приводит notes к виду { accountId: [ ... ] }.
-// Старый формат (просто массив) переносится в текущий аккаунт.
 function normalizeNotes(raw) {
   const result = {};
   ACCOUNTS.forEach(a => result[a.id] = []);
@@ -125,7 +130,13 @@ function normalizeNotes(raw) {
   return result;
 }
 
-// ===== Фильтр по датам =====
+// ===== Проверка локации предмета =====
+function isItemInLocation(item, location) {
+  const locs = item.locations || ['sea']; // по умолчанию только море
+  return locs.includes(location);
+}
+
+// ===== Фильтр по датам и локациям =====
 function localDate(iso) {
   const d = new Date(iso);
   const y = d.getFullYear();
@@ -135,14 +146,25 @@ function localDate(iso) {
 }
 
 function getFilteredDrops() {
-  const all = data[currentAccount] || [];
-  if (!filterFrom && !filterTo) return all;
-  return all.filter(d => {
-    const ld = localDate(d.at);
-    if (filterFrom && ld < filterFrom) return false;
-    if (filterTo   && ld > filterTo)   return false;
-    return true;
+  let all = data[currentAccount] || [];
+  
+  // фильтр по локации
+  all = all.filter(d => {
+    const item = findInCatalog(d.catalogId);
+    if (!item) return false;
+    return isItemInLocation(item, currentLocation);
   });
+
+  // фильтр по датам
+  if (filterFrom || filterTo) {
+    all = all.filter(d => {
+      const ld = localDate(d.at);
+      if (filterFrom && ld < filterFrom) return false;
+      if (filterTo   && ld > filterTo)   return false;
+      return true;
+    });
+  }
+  return all;
 }
 
 function applyFilter() {
@@ -208,7 +230,7 @@ function removeNote(index) {
   renderNotesList();
 }
 
-// ===== Аккаунты =====
+// ===== Аккаунты и Локации =====
 function renderAccounts() {
   const nav = document.getElementById('accounts');
   nav.innerHTML = ACCOUNTS.map(a => `
@@ -227,19 +249,37 @@ function switchAccount(id) {
   }
 }
 
+function renderLocations() {
+  const nav = document.getElementById('locations');
+  nav.innerHTML = LOCATIONS.map(l => `
+    <button class="${l.id === currentLocation ? 'active' : ''}"
+            onclick="switchLocation('${l.id}')">${l.name}</button>
+  `).join('');
+}
+
+function switchLocation(id) {
+  currentLocation = id;
+  renderLocations();
+  renderCatalogSelect(); // обновляем выпадающий список лута
+  render(); // пересчитываем статистику и записи
+}
+
 // ===== Каталог =====
 function renderCatalogSelect() {
   const sel = document.getElementById('catalogSelect');
   const groups = [];
+  
   for (const cat of Object.keys(CATEGORIES)) {
-    const items = catalog[cat] || [];
+    // Отфильтровываем предметы, которых нет в текущей локации
+    const items = (catalog[cat] || []).filter(it => isItemInLocation(it, currentLocation));
     if (!items.length) continue;
+    
     const opts = items.map(it =>
       `<option value="${cat}::${it.id}">${escapeHtml(it.name)}</option>`
     ).join('');
     groups.push(`<optgroup label="${CATEGORIES[cat].name}">${opts}</optgroup>`);
   }
-  sel.innerHTML = groups.join('') || '<option disabled>Каталог пуст</option>';
+  sel.innerHTML = groups.join('') || '<option disabled>В этой локации нет лута</option>';
 }
 
 // ===== Добавить / удалить =====
