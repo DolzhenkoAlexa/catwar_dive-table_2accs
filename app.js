@@ -64,11 +64,15 @@ const IMAGES_DIR  = 'images/';
 let catalog = { notes: {}, text: [], neutral: [], positive: [], super: [], negative: [] };
 let data = {};
 let currentAccount = ACCOUNTS[0].id;
-let currentLocation = 'sea';
 let pieChart = null;
 let negGrouped = true;
 let posGrouped = true;
 let superGrouped = true;
+
+// Локация для списка "Добавить лут"
+let addLocation = 'sea';
+// Локация для фильтрации графика ('all', 'sea', 'river')
+let chartLocation = 'all';
 
 // Фильтр по датам
 let filterFrom = '';
@@ -136,7 +140,7 @@ function isItemInLocation(item, location) {
   return locs.includes(location);
 }
 
-// ===== Фильтр по датам и локациям =====
+// ===== Фильтр по датам =====
 function localDate(iso) {
   const d = new Date(iso);
   const y = d.getFullYear();
@@ -145,17 +149,9 @@ function localDate(iso) {
   return `${y}-${m}-${day}`;
 }
 
+// Возвращает записи ТОЛЬКО с учетом фильтра по датам (без учета локации)
 function getFilteredDrops() {
   let all = data[currentAccount] || [];
-  
-  // фильтр по локации
-  all = all.filter(d => {
-    const item = findInCatalog(d.catalogId);
-    if (!item) return false;
-    return isItemInLocation(item, currentLocation);
-  });
-
-  // фильтр по датам
   if (filterFrom || filterTo) {
     all = all.filter(d => {
       const ld = localDate(d.at);
@@ -230,7 +226,7 @@ function removeNote(index) {
   renderNotesList();
 }
 
-// ===== Аккаунты и Локации =====
+// ===== Аккаунты и Локации (для добавления) =====
 function renderAccounts() {
   const nav = document.getElementById('accounts');
   nav.innerHTML = ACCOUNTS.map(a => `
@@ -252,26 +248,25 @@ function switchAccount(id) {
 function renderLocations() {
   const nav = document.getElementById('locations');
   nav.innerHTML = LOCATIONS.map(l => `
-    <button class="${l.id === currentLocation ? 'active' : ''}"
-            onclick="switchLocation('${l.id}')">${l.name}</button>
+    <button class="${l.id === addLocation ? 'active' : ''}"
+            onclick="switchAddLocation('${l.id}')">${l.name}</button>
   `).join('');
 }
 
-function switchLocation(id) {
-  currentLocation = id;
+function switchAddLocation(id) {
+  addLocation = id;
   renderLocations();
   renderCatalogSelect(); // обновляем выпадающий список лута
-  render(); // пересчитываем статистику и записи
 }
 
-// ===== Каталог =====
+// ===== Каталог (список добавления) =====
 function renderCatalogSelect() {
   const sel = document.getElementById('catalogSelect');
   const groups = [];
   
   for (const cat of Object.keys(CATEGORIES)) {
-    // Отфильтровываем предметы, которых нет в текущей локации
-    const items = (catalog[cat] || []).filter(it => isItemInLocation(it, currentLocation));
+    // Отфильтровываем предметы, которых нет в ВЫБРАННОЙ ДЛЯ ДОБАВЛЕНИЯ локации
+    const items = (catalog[cat] || []).filter(it => isItemInLocation(it, addLocation));
     if (!items.length) continue;
     
     const opts = items.map(it =>
@@ -313,10 +308,18 @@ function findInCatalog(catalogId) {
   return null;
 }
 
-// ===== Переключатели =====
+// ===== Переключатели (график) =====
 function toggleNeg() { negGrouped = !negGrouped; updateToggles(); renderChart(); }
 function togglePos() { posGrouped = !posGrouped; updateToggles(); renderChart(); }
 function toggleSuper() { superGrouped = !superGrouped; updateToggles(); renderChart(); }
+
+function toggleLoc() {
+  if (chartLocation === 'all') chartLocation = 'sea';
+  else if (chartLocation === 'sea') chartLocation = 'river';
+  else chartLocation = 'all';
+  updateToggles();
+  renderChart();
+}
 
 function updateToggles() {
   const btnN = document.getElementById('toggleNeg');
@@ -334,6 +337,18 @@ function updateToggles() {
     btnS.textContent = superGrouped ? '🟡 Супер: по видам' : '🟡 Супер: общий';
     btnS.classList.toggle('active', superGrouped);
   }
+  
+  const btnL = document.getElementById('toggleLoc');
+  if (btnL) {
+    if (chartLocation === 'all') {
+      btnL.textContent = '📍 Везде';
+    } else if (chartLocation === 'sea') {
+      btnL.textContent = '🌊 Только море';
+    } else {
+      btnL.textContent = '🏞️ Только река';
+    }
+    btnL.classList.toggle('active', chartLocation !== 'all');
+  }
 }
 
 // ===== Рендер =====
@@ -344,7 +359,7 @@ function render() {
 }
 
 function renderStats() {
-  const drops = getFilteredDrops();
+  const drops = getFilteredDrops(); // БЕЗ фильтра по локации
   const counts = { text: 0, neutral: 0, positive: 0, super: 0, negative: 0 };
   const damage = { раны: 0, переломы: 0, отравление: 0 };
   let totalDamage = 0;
@@ -412,7 +427,7 @@ function renderStats() {
 }
 
 function renderDrops() {
-  const drops = getFilteredDrops();
+  const drops = getFilteredDrops(); // БЕЗ фильтра по локации
   document.getElementById('dropCount').textContent = drops.length ? `(${drops.length})` : '';
 
   const list = document.getElementById('dropsList');
@@ -451,7 +466,16 @@ function renderDrops() {
 
 // ===== График =====
 function renderChart() {
-  const drops = getFilteredDrops();
+  let drops = getFilteredDrops();
+
+  // Применяем фильтр локации ТОЛЬКО для графика
+  if (chartLocation !== 'all') {
+    drops = drops.filter(d => {
+      const item = findInCatalog(d.catalogId);
+      if (!item) return false;
+      return isItemInLocation(item, chartLocation);
+    });
+  }
 
   let textCount = 0;
   let neutralCount = 0;
