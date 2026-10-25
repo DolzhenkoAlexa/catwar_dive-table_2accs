@@ -66,7 +66,7 @@ let superGrouped = true;
 
 // Локация для списка "Добавить лут"
 let addLocation = 'sea';
-// Локация для фильтрации графика ('all', 'sea', 'river')
+// Локация для фильтрации графика и статистики ('all', 'sea', 'river')
 let chartLocation = 'all';
 
 // Фильтр по датам
@@ -128,7 +128,7 @@ function normalizeNotes(raw) {
   return result;
 }
 
-// ===== Проверка локации предмета =====
+// ===== Проверка локации предмета (для старых записей без поля location) =====
 function isItemInLocation(item, location) {
   const locs = item.locations || ['sea']; // по умолчанию только море
   return locs.includes(location);
@@ -143,7 +143,7 @@ function localDate(iso) {
   return `${y}-${m}-${day}`;
 }
 
-// Возвращает записи ТОЛЬКО с учетом фильтра по датам (без учета локации)
+// Возвращает записи ТОЛЬКО с учетом фильтра по датам (вся история)
 function getFilteredDrops() {
   let all = data[currentAccount] || [];
   if (filterFrom || filterTo) {
@@ -155,6 +155,22 @@ function getFilteredDrops() {
     });
   }
   return all;
+}
+
+// Возвращает записи с учетом выбранной локации (для графика и статистики)
+function getLocationFilteredDrops(location) {
+  let drops = getFilteredDrops();
+  if (location !== 'all') {
+    drops = drops.filter(d => {
+      const item = findInCatalog(d.catalogId);
+      if (!item) return false;
+      // Если у записи сохранена локация (все новые записи), используем её
+      if (d.location) return d.location === location;
+      // Для старых записей без поля location - угадываем по каталогу
+      return isItemInLocation(item, location);
+    });
+  }
+  return drops;
 }
 
 function applyFilter() {
@@ -271,6 +287,7 @@ function addDrop() {
   data[currentAccount].unshift({
     catalogId: id,
     category: cat,
+    location: addLocation, // <--- СОХРАНЯЕМ ЛОКАЦИЮ ПРИ ДОБАВЛЕНИИ
     at: new Date().toISOString()
   });
   render();
@@ -304,7 +321,7 @@ function toggleLoc() {
   else if (chartLocation === 'sea') chartLocation = 'river';
   else chartLocation = 'all';
   updateToggles();
-  renderChart();
+  render(); // Перерисовываем и график, и статистику
 }
 
 function updateToggles() {
@@ -345,7 +362,9 @@ function render() {
 }
 
 function renderStats() {
-  const drops = getFilteredDrops(); // БЕЗ фильтра по локации
+  // ПРИМЕНЯЕМ ФИЛЬТР ЛОКАЦИИ И ДЛЯ СТАТИСТИКИ
+  const drops = getLocationFilteredDrops(chartLocation);
+  
   const counts = { text: 0, neutral: 0, positive: 0, super: 0, negative: 0 };
   const damage = { раны: 0, переломы: 0, отравление: 0 };
   let totalDamage = 0;
@@ -413,7 +432,8 @@ function renderStats() {
 }
 
 function renderDrops() {
-  const drops = getFilteredDrops(); // БЕЗ фильтра по локации
+  // СПИСОК ЗАПИСЕЙ ВСЕГДА ПОЛНЫЙ (без фильтра локации)
+  const drops = getFilteredDrops();
   document.getElementById('dropCount').textContent = drops.length ? `(${drops.length})` : '';
 
   const list = document.getElementById('dropsList');
@@ -437,12 +457,18 @@ function renderDrops() {
     const noteHtml = item.note
       ? `<span class="note">${escapeHtml(item.note)}</span>`
       : '';
+      
+    // Иконка локации для наглядности (чтобы ты видела, где был нырок)
+    let locIcon = '';
+    if (d.location === 'sea') locIcon = '🌊';
+    else if (d.location === 'river') locIcon = '🏞️';
+    const locBadge = locIcon ? `<span class="loc-badge" title="${d.location === 'sea' ? 'Море' : 'Река'}">${locIcon}</span>` : '';
 
     return `
       <div class="drop-item">
         <div class="thumb">${thumb}</div>
         <span class="tag ${item.category}">${CATEGORIES[item.category].name}</span>
-        <span class="name">${escapeHtml(item.name)}${noteHtml}</span>
+        <span class="name">${locBadge}${escapeHtml(item.name)}${noteHtml}</span>
         <span class="time">${time}</span>
         <button class="remove" onclick="removeDrop(${i})" title="Удалить">✕</button>
       </div>
@@ -452,16 +478,8 @@ function renderDrops() {
 
 // ===== График =====
 function renderChart() {
-  let drops = getFilteredDrops();
-
-  // Применяем фильтр локации ТОЛЬКО для графика
-  if (chartLocation !== 'all') {
-    drops = drops.filter(d => {
-      const item = findInCatalog(d.catalogId);
-      if (!item) return false;
-      return isItemInLocation(item, chartLocation);
-    });
-  }
+  // ПРИМЕНЯЕМ ФИЛЬТР ЛОКАЦИИ ДЛЯ ГРАФИКА
+  const drops = getLocationFilteredDrops(chartLocation);
 
   let textCount = 0;
   let neutralCount = 0;
