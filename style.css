@@ -735,6 +735,12 @@ button.primary:hover { background: var(--accent-dark); }
     gap: 0.5rem;
   }
 
+  .loc-badge {
+  font-size: 0.75rem;
+  margin-right: 5px;
+  opacity: 0.8;
+  }
+
   .location-picker { justify-content: center; }
 
   .accounts { justify-content: center; }
