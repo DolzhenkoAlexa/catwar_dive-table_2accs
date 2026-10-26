@@ -26,29 +26,39 @@ const POS_GROUPS = [
 ];
 
 const SUPER_GROUPS = [
-  { key: 'dense',   label: 'Плотная водоросль',   color: '#4caf50',
+  { key: 'dense',        label: 'Плотная водоросль',   color: '#4caf50',
     match: n => n === 'Плотная водоросль' },
-  { key: 'healing', label: 'Целебная водоросль',  color: '#2e7d32',
-    match: n => n === 'Целебная водоросль' },
-  { key: 'branch',  label: 'Крепкая ветка',       color: '#8d6e63',
+  { key: 'healing',      label: 'Целебная водоросль',  color: '#2e7d32',
+    match: n => n.startsWith('Целебная водоросль') }, // Ловит и морскую, и речную
+  { key: 'branch',       label: 'Крепкая ветка',       color: '#8d6e63',
     match: n => n === 'Крепкая ветка' },
-  { key: 'coral',   label: 'Алые кораллы',        color: '#ff6f00',
+  { key: 'coral',        label: 'Алые кораллы',        color: '#ff6f00',
     match: n => n.startsWith('Алый коралл') },
-  { key: 'seaweed', label: 'Листы водорослей',    color: '#ffb300',
+  { key: 'seaweed',      label: 'Листы водорослей',    color: '#ffb300',
     match: n => n.startsWith('Лист морской водоросли') },
-  { key: 'iskra',   label: 'Искра',               color: '#ffee00',
-    match: n => n === 'Искра' }
+  { key: 'iskra',        label: 'Искра',               color: '#ffee00',
+    match: n => n === 'Искра' },
+  { key: 'shell_orange', label: 'Оранжевые ракушки',   color: '#ff9800',
+    match: n => n.startsWith('Большая (оранжевая) ракушка') },
+  { key: 'shell_blue',   label: 'Голубые ракушки',     color: '#2196f3',
+    match: n => n.startsWith('Небольшая (голубая) ракушка') }
 ];
 
 const NEG_GROUPS = [
-  { key: 'crab',  label: 'Крабы',  color: '#b71c1c',
+  { key: 'crab',     label: 'Крабы',  color: '#b71c1c',
     match: n => n.startsWith('Живой краб') },
-  { key: 'ray',   label: 'Скаты',  color: '#e53935',
-    match: n => n.startsWith('Живой электрический скат') },
-  { key: 'snake', label: 'Змеи',   color: '#d4534f',
+  { key: 'ray',      label: 'Скаты',  color: '#e53935',
+    match: n => n.startsWith('Живой скат') || n.startsWith('Живой электрический скат') }, // Поддерживает старые записи
+  { key: 'snake',    label: 'Змеи',   color: '#d4534f',
     match: n => n === 'Морская змея' },
-  { key: 'jelly', label: 'Медузы', color: '#ef9a9a',
-    match: n => n === 'Медуза' }
+  { key: 'jelly',    label: 'Медузы', color: '#ef9a9a',
+    match: n => n === 'Медуза' },
+  { key: 'crayfish', label: 'Раки',   color: '#c62828',
+    match: n => n === 'Живой рак' },
+  { key: 'toad',     label: 'Жабы',   color: '#ad1457',
+    match: n => n === 'Зеленая жаба' },
+  { key: 'eel',      label: 'Угри',   color: '#880e4f',
+    match: n => n === 'Живой угорь' }
 ];
 
 const CATALOG_URL = 'catalog.json';
