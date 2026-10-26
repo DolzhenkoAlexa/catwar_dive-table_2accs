@@ -29,7 +29,7 @@ const SUPER_GROUPS = [
   { key: 'dense',        label: 'Плотная водоросль',   color: '#4caf50',
     match: n => n === 'Плотная водоросль' },
   { key: 'healing',      label: 'Целебная водоросль',  color: '#2e7d32',
-    match: n => n.startsWith('Целебная водоросль') }, // Ловит и морскую, и речную
+    match: n => n.startsWith('Целебная водоросль') },
   { key: 'branch',       label: 'Крепкая ветка',       color: '#8d6e63',
     match: n => n === 'Крепкая ветка' },
   { key: 'coral',        label: 'Алые кораллы',        color: '#ff6f00',
@@ -45,20 +45,12 @@ const SUPER_GROUPS = [
 ];
 
 const NEG_GROUPS = [
-  { key: 'crab',     label: 'Крабы',  color: '#b71c1c',
-    match: n => n.startsWith('Живой краб') },
-  { key: 'ray',      label: 'Скаты',  color: '#e53935',
-    match: n => n.startsWith('Живой скат') || n.startsWith('Живой электрический скат') }, // Поддерживает старые записи
-  { key: 'snake',    label: 'Змеи',   color: '#d4534f',
-    match: n => n === 'Морская змея' },
-  { key: 'jelly',    label: 'Медузы', color: '#ef9a9a',
-    match: n => n === 'Медуза' },
-  { key: 'crayfish', label: 'Раки',   color: '#c62828',
-    match: n => n === 'Живой рак' },
-  { key: 'toad',     label: 'Жабы',   color: '#ad1457',
-    match: n => n === 'Зеленая жаба' },
-  { key: 'eel',      label: 'Угри',   color: '#880e4f',
-    match: n => n === 'Живой угорь' }
+  { key: 'wounds',    label: 'Раны',       color: '#b71c1c',
+    match: n => n.startsWith('Живой краб') || n === 'Живой рак' },
+  { key: 'fractures', label: 'Переломы',   color: '#e53935',
+    match: n => n.startsWith('Живой скат') || n.startsWith('Живой электрический скат') || n === 'Живой угорь' },
+  { key: 'poison',    label: 'Отравление', color: '#ef9a9a',
+    match: n => n === 'Морская змея' || n === 'Медуза' || n === 'Зеленая жаба' }
 ];
 
 const CATALOG_URL = 'catalog.json';
@@ -74,12 +66,9 @@ let negGrouped = true;
 let posGrouped = true;
 let superGrouped = true;
 
-// Локация для списка "Добавить лут"
 let addLocation = 'sea';
-// Локация для фильтрации графика и статистики ('all', 'sea', 'river')
 let chartLocation = 'all';
 
-// Фильтр по датам
 let filterFrom = '';
 let filterTo   = '';
 
@@ -138,9 +127,9 @@ function normalizeNotes(raw) {
   return result;
 }
 
-// ===== Проверка локации предмета (для старых записей без поля location) =====
+// ===== Проверка локации предмета =====
 function isItemInLocation(item, location) {
-  const locs = item.locations || ['sea']; // по умолчанию только море
+  const locs = item.locations || ['sea'];
   return locs.includes(location);
 }
 
@@ -153,7 +142,6 @@ function localDate(iso) {
   return `${y}-${m}-${day}`;
 }
 
-// Возвращает записи ТОЛЬКО с учетом фильтра по датам (вся история)
 function getFilteredDrops() {
   let all = data[currentAccount] || [];
   if (filterFrom || filterTo) {
@@ -167,16 +155,13 @@ function getFilteredDrops() {
   return all;
 }
 
-// Возвращает записи с учетом выбранной локации (для графика и статистики)
 function getLocationFilteredDrops(location) {
   let drops = getFilteredDrops();
   if (location !== 'all') {
     drops = drops.filter(d => {
       const item = findInCatalog(d.catalogId);
       if (!item) return false;
-      // Если у записи сохранена локация (все новые записи), используем её
       if (d.location) return d.location === location;
-      // Для старых записей без поля location - угадываем по каталогу
       return isItemInLocation(item, location);
     });
   }
@@ -268,7 +253,7 @@ function switchAccount(id) {
 // ===== Выбор локации для добавления =====
 function switchAddLocation(id) {
   addLocation = id;
-  renderCatalogSelect(); // обновляем выпадающий список лута
+  renderCatalogSelect();
 }
 
 // ===== Каталог (список добавления) =====
@@ -277,7 +262,6 @@ function renderCatalogSelect() {
   const groups = [];
   
   for (const cat of Object.keys(CATEGORIES)) {
-    // Отфильтровываем предметы, которых нет в ВЫБРАННОЙ ДЛЯ ДОБАВЛЕНИЯ локации
     const items = (catalog[cat] || []).filter(it => isItemInLocation(it, addLocation));
     if (!items.length) continue;
     
@@ -297,7 +281,7 @@ function addDrop() {
   data[currentAccount].unshift({
     catalogId: id,
     category: cat,
-    location: addLocation, // <--- СОХРАНЯЕМ ЛОКАЦИЮ ПРИ ДОБАВЛЕНИИ
+    location: addLocation,
     at: new Date().toISOString()
   });
   render();
@@ -331,7 +315,7 @@ function toggleLoc() {
   else if (chartLocation === 'sea') chartLocation = 'river';
   else chartLocation = 'all';
   updateToggles();
-  render(); // Перерисовываем и график, и статистику
+  render();
 }
 
 function updateToggles() {
@@ -372,9 +356,7 @@ function render() {
 }
 
 function renderStats() {
-  // ПРИМЕНЯЕМ ФИЛЬТР ЛОКАЦИИ И ДЛЯ СТАТИСТИКИ
   const drops = getLocationFilteredDrops(chartLocation);
-  
   const counts = { text: 0, neutral: 0, positive: 0, super: 0, negative: 0 };
   const damage = { раны: 0, переломы: 0, отравление: 0 };
   let totalDamage = 0;
@@ -442,7 +424,6 @@ function renderStats() {
 }
 
 function renderDrops() {
-  // СПИСОК ЗАПИСЕЙ ВСЕГДА ПОЛНЫЙ (без фильтра локации)
   const drops = getFilteredDrops();
   document.getElementById('dropCount').textContent = drops.length ? `(${drops.length})` : '';
 
@@ -468,7 +449,6 @@ function renderDrops() {
       ? `<span class="note">${escapeHtml(item.note)}</span>`
       : '';
       
-    // Иконка локации для наглядности (чтобы ты видела, где был нырок)
     let locIcon = '';
     if (d.location === 'sea') locIcon = '🌊';
     else if (d.location === 'river') locIcon = '🏞️';
@@ -486,9 +466,27 @@ function renderDrops() {
   }).join('');
 }
 
+// ===== Умный сборщик названий для графика =====
+function getShortNegName(n) {
+  if (n.includes('краб')) return 'Краб';
+  if (n.includes('рак')) return 'Рак';
+  if (n.includes('скат')) return 'Скат';
+  if (n.includes('угорь')) return 'Угорь';
+  if (n.includes('змея')) return 'Змея';
+  if (n.includes('медуза')) return 'Медуза';
+  if (n.includes('жаба')) return 'Жаба';
+  return n;
+}
+
+function formatNames(namesArr) {
+  if (namesArr.length === 0) return '';
+  if (namesArr.length === 1) return namesArr[0];
+  if (namesArr.length === 2) return `${namesArr[0]} или ${namesArr[1]}`;
+  return `${namesArr.slice(0, -1).join(', ')} или ${namesArr[namesArr.length - 1]}`;
+}
+
 // ===== График =====
 function renderChart() {
-  // ПРИМЕНЯЕМ ФИЛЬТР ЛОКАЦИИ ДЛЯ ГРАФИКА
   const drops = getLocationFilteredDrops(chartLocation);
 
   let textCount = 0;
@@ -496,12 +494,19 @@ function renderChart() {
   let posTotal = 0;
   let superTotal = 0;
   let negTotal = 0;
+  
   const posCounts = {};
   const superCounts = {};
-  const negCounts = {};
+  
+  // Для негатива используем объекты для подсчета и сбора уникальных имен
+  const negData = {};
+  NEG_GROUPS.forEach(g => {
+    negData[g.key] = { count: 0, names: new Set() };
+  });
+  
   POS_GROUPS.forEach(g => posCounts[g.key] = 0);
   SUPER_GROUPS.forEach(g => superCounts[g.key] = 0);
-  NEG_GROUPS.forEach(g => negCounts[g.key] = 0);
+  
   let posOther = 0;
   let superOther = 0;
   let negOther = 0;
@@ -527,8 +532,13 @@ function renderChart() {
     else if (item.category === 'negative') {
       negTotal++;
       const g = NEG_GROUPS.find(x => x.match(item.name));
-      if (g) negCounts[g.key]++;
-      else negOther++;
+      if (g) {
+        negData[g.key].count++;
+        // Собираем короткие имена (Краб, Рак и т.д.)
+        negData[g.key].names.add(getShortNegName(item.name));
+      } else {
+        negOther++;
+      }
     }
   });
 
@@ -564,11 +574,17 @@ function renderChart() {
 
   if (negGrouped) {
     NEG_GROUPS.forEach(g => {
-      if (negCounts[g.key]) slices.push({
-        label: `${g.label} (${negCounts[g.key]})`,
-        value: negCounts[g.key],
-        color: g.color
-      });
+      const data = negData[g.key];
+      if (data.count > 0) {
+        // Сортируем имена для постоянного порядка
+        const namesArr = Array.from(data.names).sort();
+        const labelStr = formatNames(namesArr);
+        slices.push({
+          label: `${labelStr} (${data.count})`,
+          value: data.count,
+          color: g.color
+        });
+      }
     });
     if (negOther) slices.push({ label: `Негатив, прочее (${negOther})`, value: negOther, color: '#7a4a4a' });
   } else {
