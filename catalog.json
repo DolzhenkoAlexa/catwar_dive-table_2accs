@@ -12,7 +12,14 @@
     { "id": "neu_surgeon",   "name": "Хирурговая рыба",     "image": "hirirrg.png" },
     { "id": "neu_clown",     "name": "Рыба-клоун",          "image": "clownfish.png" },
     { "id": "neu_sigan",     "name": "Сиган",               "image": "sigan.png" },
-    { "id": "neu_butterfly", "name": "Рыба-бабочка",        "image": "babochkafish.png" }
+    { "id": "neu_butterfly", "name": "Рыба-бабочка",        "image": "babochkafish.png" },
+    
+    { "id": "neu_karas",     "name": "Карась",              "image": "karas.png", "locations": ["river"] },
+    { "id": "neu_sazan",     "name": "Сазан",               "image": "sazan.png", "locations": ["river"] },
+    { "id": "neu_forel",     "name": "Форель",              "image": "forel.png", "locations": ["river"] },
+    { "id": "neu_beliyamur", "name": "Белый амур",          "image": "beliyamur.png", "locations": ["river"] },
+    { "id": "neu_cherniyokun","name": "Черный окунь",       "image": "cherniyokun.png", "locations": ["river"] },
+    { "id": "neu_tolstolobik","name": "Толстолобик",        "image": "tolstolobik.png", "locations": ["river"] }
   ],
   "positive": [
     { "id": "pos_moss",        "name": "Обычный мох",                 "image": "moh.png", "locations": ["sea", "river"] },
@@ -38,7 +45,7 @@
     { "id": "pos_shell_b1",    "name": "Небольшая (голубая) ракушка (1)", "image": "blue_shell1.png", "locations": ["river"] },
     { "id": "pos_shell_b2",    "name": "Небольшая (голубая) ракушка (2)", "image": "blue_shell2.png", "locations": ["river"] },
     { "id": "pos_shell_b3",    "name": "Небольшая (голубая) ракушка (3)", "image": "blue_shell3.png", "locations": ["river"] },
-    { "id": "pos_healing_reka","name": "Целебная водоросль",           "image": "celebnayaodorosl_reka.png", "locations": ["river"] }
+    { "id": "pos_healing_reka","name": "Целебная водоросль",           "image": "celeb nayaodorosl_reka.png", "locations": ["river"] }
   ],
   "negative": [
     { "id": "neg_crab_1", "name": "Живой краб",    "image": "3975.png", "damage": 5,  "effect": "раны" },
