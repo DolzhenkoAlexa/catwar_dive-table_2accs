@@ -39,9 +39,9 @@ const SUPER_GROUPS = [
   { key: 'iskra',        label: 'Искра',               color: '#ffee00',
     match: n => n === 'Искра' },
   { key: 'shell_orange', label: 'Оранжевые ракушки',   color: '#ff9800',
-    match: n => n.startsWith('Большая (оранжевая) ракушка') },
+    match: n => n.startsWith('Оранжевая ракушка') },
   { key: 'shell_blue',   label: 'Голубые ракушки',     color: '#2196f3',
-    match: n => n.startsWith('Небольшая (голубая) ракушка') }
+    match: n => n.startsWith('Голубая ракушка') }
 ];
 
 const NEG_GROUPS = [
