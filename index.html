@@ -51,14 +51,16 @@
         </section>
 
         <section class="card add-card">
-          <h2>Добавить лут</h2>
-          
-          <!-- Поле даты на отдельной строке -->
-          <div class="add-date-row">
-            <input type="date" id="addDate" onchange="onDateChange(this)">
+          <!-- Заголовок и дата на одной строке -->
+          <div class="add-header">
+            <h2>Добавить лут</h2>
+            <label class="add-date-label">
+              Дата:
+              <input type="date" id="addDate" onchange="onDateChange(this)">
+            </label>
           </div>
           
-          <!-- Прежняя строка добавления лута -->
+          <!-- Строка добавления -->
           <div class="add-row">
             <select id="catalogSelect"></select>
             <button class="primary" onclick="addDrop()">+</button>
@@ -108,6 +110,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=24"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>
