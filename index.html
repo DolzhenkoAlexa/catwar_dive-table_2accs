@@ -53,6 +53,17 @@
         <section class="card add-card">
           <h2>Добавить лут</h2>
           <div class="add-row">
+            <!-- Кастомная кнопка даты -->
+            <div class="date-picker-wrap">
+              <button type="button" class="date-btn" onclick="openDatePicker(event)" title="Изменить дату">
+                <span id="dateBtnLabel">Дата: сегодня</span>
+              </button>
+              <!-- Скрытый нативный input, на который кликаем программно -->
+              <input type="date" id="addDate" class="hidden-date" onchange="onDateChange(this)">
+              <!-- Кнопка сброса на сегодня (появляется только если выбрана другая дата) -->
+              <button type="button" id="resetDateBtn" class="reset-date" onclick="resetAddDate(event)" title="Сбросить на сегодня">✕</button>
+            </div>
+            
             <select id="catalogSelect"></select>
             <button class="primary" onclick="addDrop()">+</button>
           </div>
@@ -101,6 +112,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=17"></script>
+  <script src="app.js?v=23"></script>
 </body>
 </html>
