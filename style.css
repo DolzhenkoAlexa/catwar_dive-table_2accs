@@ -1,748 +1,806 @@
-// ===== Настройки =====
-const ACCOUNTS = [
-  { id: 'phil', name: 'Фил' },
-  { id: 'shao', name: 'Шао' }
-];
+:root {
+  --bg: #e8f4fb;
+  --bg-soft: #f4fafd;
+  --card: #ffffff;
+  --accent: #4aa3d8;
+  --accent-dark: #2b7dad;
+  --accent-soft: #d7ebf8;
+  --text: #1f3a4d;
+  --text-dim: #6b8ba1;
+  --border: #cfe4f0;
+  --c-text: #b8ddf0;
+  --c-neutral: #c0ded6;
+  --c-positive: #6ec25a;
+  --c-super: #ffc107;
+  --c-negative: #e57b7b;
+}
 
-const CATEGORIES = {
-  text:     { name: 'Текстовый',      color: '#b8ddf0' },
-  neutral:  { name: 'Нейтральный',    color: '#c0ded6' },
-  positive: { name: 'Положительный',  color: '#6ec25a' },
-  super:    { name: 'Супер удачный',  color: '#ffc107' },
-  negative: { name: 'Негативный',     color: '#e57b7b' }
-};
+* { box-sizing: border-box; }
 
-const POS_GROUPS = [
-  { key: 'moss',    label: 'Мхи',                color: '#7cb342',
-    match: n => n === 'Обычный мох' || n === 'Наполненный водой мох' },
-  { key: 'stone_c', label: 'Крошечный камень',   color: '#cfd8dc',
-    match: n => n === 'Крошечный камень' },
-  { key: 'stone_s', label: 'Небольшой камень',   color: '#b0bec5',
-    match: n => n === 'Небольшой камень' },
-  { key: 'stone_l', label: 'Камень',             color: '#90a4ae',
-    match: n => n === 'Камень' },
-  { key: 'kom',     label: 'Ком из веток и водорослей', color: '#00e676',
-    match: n => n === 'Ком из веток и водорослей' }
-];
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 
-const SUPER_GROUPS = [
-  { key: 'dense',        label: 'Плотная водоросль',   color: '#4caf50',
-    match: n => n === 'Плотная водоросль' },
-  { key: 'healing',      label: 'Целебная водоросль',  color: '#2e7d32',
-    match: n => n.startsWith('Целебная водоросль') },
-  { key: 'branch',       label: 'Крепкая ветка',       color: '#8d6e63',
-    match: n => n === 'Крепкая ветка' },
-  { key: 'coral',        label: 'Алые кораллы',        color: '#ff6f00',
-    match: n => n.startsWith('Алый коралл') },
-  { key: 'seaweed',      label: 'Листы водорослей',    color: '#ffb300',
-    match: n => n.startsWith('Лист морской водоросли') },
-  { key: 'iskra',        label: 'Искра',               color: '#ffee00',
-    match: n => n === 'Искра' },
-  { key: 'shell_orange', label: 'Оранжевые ракушки',   color: '#ff9800',
-    match: n => n.startsWith('Оранжевая ракушка') },
-  { key: 'shell_blue',   label: 'Голубые ракушки',     color: '#2196f3',
-    match: n => n.startsWith('Голубая ракушка') }
-];
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg, #e8f4fb 0%, #d8ecf7 100%);
+  color: var(--text);
+}
 
-const NEG_GROUPS = [
-  { key: 'wounds',    label: 'Раны',       color: '#b71c1c',
-    match: n => n.startsWith('Живой краб') || n === 'Живой рак' },
-  { key: 'fractures', label: 'Переломы',   color: '#e53935',
-    match: n => n.startsWith('Живой скат') || n.startsWith('Живой электрический скат') || n === 'Живой угорь' },
-  { key: 'poison',    label: 'Отравление', color: '#ef9a9a',
-    match: n => n === 'Морская змея' || n === 'Медуза' || n === 'Зеленая жаба' }
-];
+.app {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem 0.75rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+}
 
-const CATALOG_URL = 'catalog.json';
-const DATA_URL    = 'data/loot.json';
-const IMAGES_DIR  = 'images/';
+/* шапка */
+header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
-// ===== Состояние =====
-let catalog = { notes: {}, text: [], neutral: [], positive: [], super: [], negative: [] };
-let data = {};
-let currentAccount = ACCOUNTS[0].id;
-let pieChart = null;
-let negGrouped = true;
-let posGrouped = true;
-let superGrouped = true;
+header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
 
-let addLocation = 'sea';
-let chartLocation = 'all';
-let selectedAddDate = ''; // формат YYYY-MM-DD
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
-let filterFrom = '';
-let filterTo   = '';
+/* выбор локации */
+.location-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
 
-// ===== Старт =====
-async function init() {
-  await Promise.all([loadCatalog(), loadData()]);
-  ACCOUNTS.forEach(a => { if (!Array.isArray(data[a.id])) data[a.id] = []; });
-  catalog.notes = normalizeNotes(catalog.notes);
+.location-picker select {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.location-picker select:hover,
+.location-picker select:focus {
+  border-color: var(--accent);
+}
+
+/* аккаунты */
+.accounts {
+  display: flex;
+  gap: 6px;
+}
+
+.accounts button {
+  padding: 6px 18px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.accounts button:hover { border-color: var(--accent); color: var(--accent-dark); }
+
+.accounts button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(74, 163, 216, 0.3);
+}
+
+/* двухколоночный layout */
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
+  gap: 1rem;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+.col-left { min-height: 0; }
+.col-right { min-height: 0; }
+
+/* карточки */
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(40, 90, 130, 0.06);
+}
+
+.card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+
+.count {
+  color: var(--text-dim);
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+/* статистика */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.stat-tile {
+  background: var(--bg-soft);
+  border-radius: 8px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--accent);
+  min-width: 0;
+}
+
+.stat-tile .label {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-tile .value {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.stat-tile.text     { border-color: var(--c-text); }
+.stat-tile.neutral  { border-color: var(--c-neutral); }
+.stat-tile.positive { border-color: var(--c-positive); }
+.stat-tile.super    { border-color: var(--c-super); }
+.stat-tile.negative { border-color: var(--c-negative); }
+
+.damage-line {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+.damage-line b { color: var(--c-negative); }
+
+/* процент рядом с числом в статистике */
+.stat-tile .pct {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* тултип на плитке статистики */
+.stat-tile.has-popup {
+  position: relative;
+  cursor: help;
+}
+
+.tile-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 6px 20px rgba(40, 90, 130, 0.18);
+  font-size: 0.82rem;
+  color: var(--text);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 30;
+  min-width: 100%;
+  max-width: 260px;
+}
+
+.tile-popup div {
+  padding: 2px 0;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile-popup div b {
+  color: var(--accent-dark);
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.stat-tile.has-popup:hover .tile-popup {
+  opacity: 1;
+}
+
+/* график */
+.chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.chart-head h2 { margin: 0; }
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  padding-bottom: 1rem;
+}
+
+.chart-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 0.75rem;
+}
+
+.chart-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.empty-chart {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+/* добавление */
+.add-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem; /* Увеличенный отступ */
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.add-header h2 {
+  margin: 0;
+}
+
+.add-date-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.add-date-label input[type="date"] {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.add-date-label input[type="date"]:focus {
+  border-color: var(--accent);
+}
+
+.add-row { 
+  display: flex; 
+  gap: 8px; 
+  align-items: stretch;
+}
+
+.add-row select {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  font-size: 0.9rem;
+  color: var(--text);
+  min-width: 0;
+}
+
+button.primary {
+  padding: 9px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+button.primary:hover { background: var(--accent-dark); }
+
+/* файлы в шапке */
+.files-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.files-row button,
+.files-row .btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.files-row button:hover,
+.files-row .btn:hover { border-color: var(--accent); color: var(--accent-dark); }
+
+/* список записей */
+.drops-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  padding-bottom: 0.5rem;
+}
+
+.drops-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0 -0.5rem;
+  padding: 0 0.5rem;
+}
+
+.drops-list::-webkit-scrollbar { width: 8px; }
+.drops-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.drops-list::-webkit-scrollbar-thumb:hover { background: var(--accent-soft); }
+
+.drop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.drop-item:last-child { border-bottom: none; }
+
+.drop-item .thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.drop-item .thumb img { max-width: 100%; max-height: 100%; }
+
+.drop-item .name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drop-item .time {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.drop-item .remove {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+.drop-item .remove:hover { color: var(--c-negative); }
+
+.tag {
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.tag.text     { background: #e0eff8; color: #5a9bc0; }
+.tag.neutral  { background: #eaf3f0; color: #6b8f85; }
+.tag.positive { background: #e6f5e0; color: #4c9e3a; }
+.tag.super    { background: #fff8e1; color: #b28704; }
+.tag.negative { background: #fbe5e5; color: #b85555; }
+
+/* пометки к луту */
+.drop-item .note {
+  font-size: 0.68rem;
+  color: #7b5e00;
+  background: #fff3c4;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.loc-badge {
+  font-size: 0.75rem;
+  margin-right: 5px;
+  opacity: 0.8;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+/* переключатель графика */
+.toggle {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.toggle:hover { border-color: var(--accent); color: var(--accent-dark); }
+
+.toggle.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* карточка фильтра по датам */
+.filter-card {
+  padding: 0.55rem 0.9rem;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-row input[type="date"] {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-family: inherit;
+}
+
+.filter-row input[type="date"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.filter-sep {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.filter-reset {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.filter-reset:hover { border-color: var(--accent); color: var(--accent-dark); }
+
+/* метка периода в заголовке статистики */
+.period-label {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-left: 8px;
+}
+
+/* кнопка заметок рядом с фильтром */
+.notes-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  border-radius: 50%;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notes-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
+/* модалка заметок */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 60, 90, 0.35);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  max-width: 480px;
+  width: 100%;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(20, 60, 100, 0.25);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.modal-head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--accent-dark);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--c-negative); }
+
+.modal-hint {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin: 0 0 0.9rem;
+  line-height: 1.45;
+}
+.modal-hint code {
+  background: var(--bg-soft);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+}
+
+.notes-list {
+  flex: 1;
+  min-height: 50px;
+  max-height: 45vh;
+  overflow-y: auto;
+  margin: 0 -0.25rem 0.9rem;
+  padding: 0 0.25rem;
+}
+
+.notes-list .empty-notes {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 1rem 0;
+}
+
+/* заголовок «Заметки: Фил» внутри списка */
+.notes-owner {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.notes-owner b {
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.note-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.note-item:last-child { border-bottom: none; }
+
+.note-item .text {
+  flex: 1;
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.note-item .note-remove {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.note-item .note-remove:hover { color: var(--c-negative); }
+
+.notes-add {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.notes-add textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 44px;
+  max-height: 160px;
+}
+.notes-add textarea:focus { outline: none; border-color: var(--accent); }
+
+.notes-add .primary {
+  align-self: flex-end;
+  padding: 7px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+/* адаптив */
+@media (max-width: 780px) {
+  html, body { overflow: auto; }
+
+  .app {
+    height: auto;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+    overflow: visible;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  header h1 { text-align: center; }
+
+  .header-right {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .location-picker { justify-content: center; }
+
+  .accounts { justify-content: center; }
+  .files-row { justify-content: center; }
+
+  .layout { grid-template-columns: 1fr; }
+
+  .col { overflow: visible; }
+
+  .drops-list { max-height: 50vh; }
+
+  .stat-grid { grid-template-columns: repeat(3, 1fr); }
+
+  .chart-wrap { min-height: 280px; }
   
-  // Устанавливаем сегодняшнюю дату по умолчанию
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  selectedAddDate = `${yyyy}-${mm}-${dd}`;
-  document.getElementById('addDate').value = selectedAddDate;
-
-  renderAccounts();
-  renderCatalogSelect();
-  updateToggles();
-  render();
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeNotesModal();
-  });
-}
-
-async function loadCatalog() {
-  try {
-    const r = await fetch(CATALOG_URL + '?t=' + Date.now());
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    catalog = await r.json();
-    Object.keys(CATEGORIES).forEach(k => { if (!Array.isArray(catalog[k])) catalog[k] = []; });
-    catalog.notes = normalizeNotes(catalog.notes);
-  } catch (e) {
-    console.warn('Не удалось загрузить catalog.json:', e.message);
+  /* На мобильных дата может не влезть в одну строку, поэтому переносим */
+  .add-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
-
-async function loadData() {
-  try {
-    const r = await fetch(DATA_URL + '?t=' + Date.now());
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    data = await r.json();
-  } catch (e) {
-    console.warn('Не удалось загрузить data/loot.json:', e.message);
-    data = {};
-  }
-}
-
-// ===== Заметки: нормализация =====
-function normalizeNotes(raw) {
-  const result = {};
-  ACCOUNTS.forEach(a => result[a.id] = []);
-
-  if (Array.isArray(raw)) {
-    result[currentAccount] = raw.slice();
-    return result;
-  }
-  if (raw && typeof raw === 'object') {
-    ACCOUNTS.forEach(a => {
-      if (Array.isArray(raw[a.id])) result[a.id] = raw[a.id];
-    });
-  }
-  return result;
-}
-
-// ===== Проверка локации предмета =====
-function isItemInLocation(item, location) {
-  const locs = item.locations || ['sea'];
-  return locs.includes(location);
-}
-
-// ===== Работа с датой добавления =====
-function onDateChange(input) {
-  selectedAddDate = input.value;
-}
-
-// ===== Фильтр по датам (для таблицы справа) =====
-function localDate(iso) {
-  const d = new Date(iso);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-function getFilteredDrops() {
-  let all = data[currentAccount] || [];
-  if (filterFrom || filterTo) {
-    all = all.filter(d => {
-      const ld = localDate(d.at);
-      if (filterFrom && ld < filterFrom) return false;
-      if (filterTo   && ld > filterTo)   return false;
-      return true;
-    });
-  }
-  return all;
-}
-
-function getLocationFilteredDrops(location) {
-  let drops = getFilteredDrops();
-  if (location !== 'all') {
-    drops = drops.filter(d => {
-      const item = findInCatalog(d.catalogId);
-      if (!item) return false;
-      if (d.location) return d.location === location;
-      return isItemInLocation(item, location);
-    });
-  }
-  return drops;
-}
-
-function applyFilter() {
-  filterFrom = document.getElementById('dateFrom').value || '';
-  filterTo   = document.getElementById('dateTo').value   || '';
-  render();
-}
-
-function resetFilter() {
-  filterFrom = '';
-  filterTo   = '';
-  document.getElementById('dateFrom').value = '';
-  document.getElementById('dateTo').value = '';
-  render();
-}
-
-// ===== Заметки =====
-function openNotesModal() {
-  renderNotesList();
-  document.getElementById('noteInput').value = '';
-  document.getElementById('notesOverlay').classList.add('open');
-  setTimeout(() => document.getElementById('noteInput').focus(), 60);
-}
-
-function closeNotesModal(e) {
-  if (e && e.target && e.target !== e.currentTarget) return;
-  document.getElementById('notesOverlay').classList.remove('open');
-}
-
-function renderNotesList() {
-  const list = document.getElementById('notesList');
-  const notes = (catalog.notes && catalog.notes[currentAccount]) || [];
-  const accName = ACCOUNTS.find(a => a.id === currentAccount).name;
-
-  const header = `<div class="notes-owner">Заметки: <b>${escapeHtml(accName)}</b></div>`;
-
-  if (!notes.length) {
-    list.innerHTML = header + '<div class="empty-notes">Пока нет заметок</div>';
-    return;
-  }
-  list.innerHTML = header + notes.map((n, i) => `
-    <div class="note-item">
-      <span class="text">${escapeHtml(n)}</span>
-      <button class="note-remove" onclick="removeNote(${i})" title="Удалить">✕</button>
-    </div>
-  `).join('');
-}
-
-function addNote() {
-  const input = document.getElementById('noteInput');
-  const text = input.value.trim();
-  if (!text) return;
-  if (!catalog.notes || typeof catalog.notes !== 'object') catalog.notes = {};
-  if (!Array.isArray(catalog.notes[currentAccount])) catalog.notes[currentAccount] = [];
-  catalog.notes[currentAccount].push(text);
-  input.value = '';
-  renderNotesList();
-}
-
-function removeNote(index) {
-  if (!catalog.notes || !Array.isArray(catalog.notes[currentAccount])) return;
-  catalog.notes[currentAccount].splice(index, 1);
-  renderNotesList();
-}
-
-// ===== Аккаунты =====
-function renderAccounts() {
-  const nav = document.getElementById('accounts');
-  nav.innerHTML = ACCOUNTS.map(a => `
-    <button class="${a.id === currentAccount ? 'active' : ''}"
-            onclick="switchAccount('${a.id}')">${a.name}</button>
-  `).join('');
-}
-
-function switchAccount(id) {
-  currentAccount = id;
-  renderAccounts();
-  render();
-  const overlay = document.getElementById('notesOverlay');
-  if (overlay && overlay.classList.contains('open')) {
-    renderNotesList();
-  }
-}
-
-// ===== Выбор локации для добавления =====
-function switchAddLocation(id) {
-  addLocation = id;
-  renderCatalogSelect();
-}
-
-// ===== Каталог =====
-function renderCatalogSelect() {
-  const sel = document.getElementById('catalogSelect');
-  const groups = [];
-  
-  for (const cat of Object.keys(CATEGORIES)) {
-    const items = (catalog[cat] || []).filter(it => isItemInLocation(it, addLocation));
-    if (!items.length) continue;
-    
-    const opts = items.map(it =>
-      `<option value="${cat}::${it.id}">${escapeHtml(it.name)}</option>`
-    ).join('');
-    groups.push(`<optgroup label="${CATEGORIES[cat].name}">${opts}</optgroup>`);
-  }
-  sel.innerHTML = groups.join('') || '<option disabled>В этой локации нет лута</option>';
-}
-
-// ===== Добавить / удалить =====
-function addDrop() {
-  const raw = document.getElementById('catalogSelect').value;
-  if (!raw) return;
-  const [cat, id] = raw.split('::');
-  
-  let timestamp = new Date().toISOString(); // по умолчанию - сейчас
-  
-  if (selectedAddDate) {
-    // Берем выбранную дату, но время ставим текущее
-    const now = new Date();
-    const selectedDate = new Date(selectedAddDate + 'T00:00:00');
-    selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
-    timestamp = selectedDate.toISOString();
-  }
-
-  data[currentAccount].unshift({
-    catalogId: id,
-    category: cat,
-    location: addLocation,
-    at: timestamp
-  });
-  
-  // Дату НЕ сбрасываем
-  render();
-}
-
-function removeDrop(index) {
-  const filtered = getFilteredDrops();
-  const target = filtered[index];
-  if (!target) return;
-  const realIndex = data[currentAccount].indexOf(target);
-  if (realIndex >= 0) data[currentAccount].splice(realIndex, 1);
-  render();
-}
-
-// ===== Поиск =====
-function findInCatalog(catalogId) {
-  for (const cat of Object.keys(CATEGORIES)) {
-    const found = (catalog[cat] || []).find(x => x.id === catalogId);
-    if (found) return { ...found, category: cat };
-  }
-  return null;
-}
-
-// ===== Переключатели =====
-function toggleNeg() { negGrouped = !negGrouped; updateToggles(); renderChart(); }
-function togglePos() { posGrouped = !posGrouped; updateToggles(); renderChart(); }
-function toggleSuper() { superGrouped = !superGrouped; updateToggles(); renderChart(); }
-
-function toggleLoc() {
-  if (chartLocation === 'all') chartLocation = 'sea';
-  else if (chartLocation === 'sea') chartLocation = 'river';
-  else chartLocation = 'all';
-  updateToggles();
-  render();
-}
-
-function updateToggles() {
-  const btnN = document.getElementById('toggleNeg');
-  if (btnN) {
-    btnN.textContent = negGrouped ? '🔴 Негатив: по видам' : '🔴 Негатив: общий';
-    btnN.classList.toggle('active', negGrouped);
-  }
-  const btnP = document.getElementById('togglePos');
-  if (btnP) {
-    btnP.textContent = posGrouped ? '🟢 Позитив: по видам' : '🟢 Позитив: общий';
-    btnP.classList.toggle('active', posGrouped);
-  }
-  const btnS = document.getElementById('toggleSuper');
-  if (btnS) {
-    btnS.textContent = superGrouped ? '🟡 Супер: по видам' : '🟡 Супер: общий';
-    btnS.classList.toggle('active', superGrouped);
-  }
-  
-  const btnL = document.getElementById('toggleLoc');
-  if (btnL) {
-    if (chartLocation === 'all') {
-      btnL.textContent = '📍 Везде';
-    } else if (chartLocation === 'sea') {
-      btnL.textContent = '🌊 Только море';
-    } else {
-      btnL.textContent = '🏞️ Только река';
-    }
-    btnL.classList.toggle('active', chartLocation !== 'all');
-  }
-}
-
-// ===== Рендер =====
-function render() {
-  renderStats();
-  renderDrops();
-  renderChart();
-}
-
-function renderStats() {
-  const drops = getLocationFilteredDrops(chartLocation);
-  const counts = { text: 0, neutral: 0, positive: 0, super: 0, negative: 0 };
-  const damage = { раны: 0, переломы: 0, отравление: 0 };
-  let totalDamage = 0;
-  const superItems = {};
-
-  drops.forEach(d => {
-    const item = findInCatalog(d.catalogId);
-    if (!item) return;
-    counts[item.category] = (counts[item.category] || 0) + 1;
-    if (item.category === 'negative') {
-      totalDamage += item.damage || 0;
-      if (item.effect) damage[item.effect] = (damage[item.effect] || 0) + (item.damage || 0);
-    }
-    if (item.category === 'super') {
-      superItems[item.name] = (superItems[item.name] || 0) + 1;
-    }
-  });
-
-  document.getElementById('currentName').textContent =
-    ACCOUNTS.find(a => a.id === currentAccount).name;
-
-  const periodEl = document.getElementById('periodLabel');
-  if (periodEl) {
-    if (filterFrom || filterTo) {
-      const from = filterFrom || '…';
-      const to   = filterTo   || '…';
-      periodEl.textContent = ` (${from} – ${to})`;
-    } else {
-      periodEl.textContent = '';
-    }
-  }
-
-  const total = drops.length;
-  const pct = n => total ? ((n / total) * 100).toFixed(1).replace('.0', '') + '%' : '0%';
-
-  const damageLine = Object.entries(damage)
-    .filter(([, v]) => v > 0)
-    .map(([k, v]) => `${k}: <b>${v}</b>`)
-    .join(' · ');
-
-  const superList = Object.entries(superItems).sort((a, b) => b[1] - a[1]);
-  const superPopup = superList.length ? `
-    <div class="tile-popup">
-      ${superList.map(([name, cnt]) =>
-        `<div><b>${cnt}</b> ${escapeHtml(name)}</div>`
-      ).join('')}
-    </div>
-  ` : '';
-
-  document.getElementById('stats').innerHTML = `
-    <div class="stat-grid">
-      <div class="stat-tile"><div class="label">Всего</div><div class="value">${total}<span class="pct">${total ? '100%' : '0%'}</span></div></div>
-      <div class="stat-tile text"><div class="label">Текст</div><div class="value">${counts.text}<span class="pct">${pct(counts.text)}</span></div></div>
-      <div class="stat-tile neutral"><div class="label">Нейтрал</div><div class="value">${counts.neutral}<span class="pct">${pct(counts.neutral)}</span></div></div>
-      <div class="stat-tile positive"><div class="label">Плюс</div><div class="value">${counts.positive}<span class="pct">${pct(counts.positive)}</span></div></div>
-      <div class="stat-tile super${superList.length ? ' has-popup' : ''}">
-        <div class="label">Супер</div>
-        <div class="value">${counts.super}<span class="pct">${pct(counts.super)}</span></div>
-        ${superPopup}
-      </div>
-      <div class="stat-tile negative"><div class="label">Минус</div><div class="value">${counts.negative}<span class="pct">${pct(counts.negative)}</span></div></div>
-    </div>
-    ${totalDamage ? `<div class="damage-line">Суммарный урон: <b>${totalDamage}</b>${damageLine ? ' · ' + damageLine : ''}</div>` : ''}
-  `;
-}
-
-function renderDrops() {
-  const drops = getFilteredDrops();
-  document.getElementById('dropCount').textContent = drops.length ? `(${drops.length})` : '';
-
-  const list = document.getElementById('dropsList');
-  if (!drops.length) {
-    list.innerHTML = '<div class="empty">Пока пусто. Добавь первый лут выше.</div>';
-    return;
-  }
-
-  list.innerHTML = drops.map((d, i) => {
-    const item = findInCatalog(d.catalogId);
-    if (!item) return '';
-
-    const time = new Date(d.at).toLocaleString('ru-RU', {
-      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-    });
-
-    const thumb = item.image
-      ? `<img src="${IMAGES_DIR}${item.image}" alt="" loading="lazy">`
-      : '';
-
-    const noteHtml = item.note
-      ? `<span class="note">${escapeHtml(item.note)}</span>`
-      : '';
-      
-    let locIcon = '';
-    if (d.location === 'sea') locIcon = '🌊';
-    else if (d.location === 'river') locIcon = '🏞️';
-    const locBadge = locIcon ? `<span class="loc-badge" title="${d.location === 'sea' ? 'Море' : 'Река'}">${locIcon}</span>` : '';
-
-    return `
-      <div class="drop-item">
-        <div class="thumb">${thumb}</div>
-        <span class="tag ${item.category}">${CATEGORIES[item.category].name}</span>
-        <span class="name">${locBadge}${escapeHtml(item.name)}${noteHtml}</span>
-        <span class="time">${time}</span>
-        <button class="remove" onclick="removeDrop(${i})" title="Удалить">✕</button>
-      </div>
-    `;
-  }).join('');
-}
-
-// ===== Умный сборщик названий для графика =====
-function getShortNegName(n) {
-  if (n.includes('краб')) return 'Краб';
-  if (n.includes('рак')) return 'Рак';
-  if (n.includes('скат')) return 'Скат';
-  if (n.includes('угорь')) return 'Угорь';
-  if (n.includes('змея')) return 'Змея';
-  if (n.includes('медуза')) return 'Медуза';
-  if (n.includes('жаба')) return 'Жаба';
-  return n;
-}
-
-function formatNames(namesArr) {
-  if (namesArr.length === 0) return '';
-  if (namesArr.length === 1) return namesArr[0];
-  if (namesArr.length === 2) return `${namesArr[0]} или ${namesArr[1]}`;
-  return `${namesArr.slice(0, -1).join(', ')} или ${namesArr[namesArr.length - 1]}`;
-}
-
-// ===== График =====
-function renderChart() {
-  const drops = getLocationFilteredDrops(chartLocation);
-
-  let textCount = 0;
-  let neutralCount = 0;
-  let posTotal = 0;
-  let superTotal = 0;
-  let negTotal = 0;
-  
-  const posCounts = {};
-  const superCounts = {};
-  
-  const negData = {};
-  NEG_GROUPS.forEach(g => {
-    negData[g.key] = { count: 0, names: new Set() };
-  });
-  
-  POS_GROUPS.forEach(g => posCounts[g.key] = 0);
-  SUPER_GROUPS.forEach(g => superCounts[g.key] = 0);
-  
-  let posOther = 0;
-  let superOther = 0;
-  let negOther = 0;
-
-  drops.forEach(d => {
-    const item = findInCatalog(d.catalogId);
-    if (!item) return;
-
-    if (item.category === 'text') textCount++;
-    else if (item.category === 'neutral') neutralCount++;
-    else if (item.category === 'positive') {
-      posTotal++;
-      const g = POS_GROUPS.find(x => x.match(item.name));
-      if (g) posCounts[g.key]++;
-      else posOther++;
-    }
-    else if (item.category === 'super') {
-      superTotal++;
-      const g = SUPER_GROUPS.find(x => x.match(item.name));
-      if (g) superCounts[g.key]++;
-      else superOther++;
-    }
-    else if (item.category === 'negative') {
-      negTotal++;
-      const g = NEG_GROUPS.find(x => x.match(item.name));
-      if (g) {
-        negData[g.key].count++;
-        negData[g.key].names.add(getShortNegName(item.name));
-      } else {
-        negOther++;
-      }
-    }
-  });
-
-  const slices = [];
-  if (textCount)    slices.push({ label: `Текст (${textCount})`,       value: textCount,    color: CATEGORIES.text.color });
-  if (neutralCount) slices.push({ label: `Нейтрал (${neutralCount})`,  value: neutralCount, color: CATEGORIES.neutral.color });
-
-  if (posGrouped) {
-    POS_GROUPS.forEach(g => {
-      if (posCounts[g.key]) slices.push({
-        label: `${g.label} (${posCounts[g.key]})`,
-        value: posCounts[g.key],
-        color: g.color
-      });
-    });
-    if (posOther) slices.push({ label: `Позитив, прочее (${posOther})`, value: posOther, color: '#c5e1a5' });
-  } else {
-    if (posTotal) slices.push({ label: `Позитив (${posTotal})`, value: posTotal, color: CATEGORIES.positive.color });
-  }
-
-  if (superGrouped) {
-    SUPER_GROUPS.forEach(g => {
-      if (superCounts[g.key]) slices.push({
-        label: `${g.label} (${superCounts[g.key]})`,
-        value: superCounts[g.key],
-        color: g.color
-      });
-    });
-    if (superOther) slices.push({ label: `Супер, прочее (${superOther})`, value: superOther, color: '#ffe082' });
-  } else {
-    if (superTotal) slices.push({ label: `Супер (${superTotal})`, value: superTotal, color: CATEGORIES.super.color });
-  }
-
-  if (negGrouped) {
-    NEG_GROUPS.forEach(g => {
-      const data = negData[g.key];
-      if (data.count > 0) {
-        const namesArr = Array.from(data.names).sort();
-        const labelStr = formatNames(namesArr);
-        slices.push({
-          label: `${labelStr} (${data.count})`,
-          value: data.count,
-          color: g.color
-        });
-      }
-    });
-    if (negOther) slices.push({ label: `Негатив, прочее (${negOther})`, value: negOther, color: '#7a4a4a' });
-  } else {
-    if (negTotal) slices.push({ label: `Негатив (${negTotal})`, value: negTotal, color: CATEGORIES.negative.color });
-  }
-
-  const canvas = document.getElementById('pieChart');
-  if (!canvas) return;
-
-  if (!slices.length) {
-    if (pieChart) { pieChart.destroy(); pieChart = null; }
-    canvas.style.display = 'none';
-    let empty = canvas.parentElement.querySelector('.empty-chart');
-    if (!empty) {
-      empty = document.createElement('div');
-      empty.className = 'empty-chart';
-      empty.textContent = 'Нет данных для графика';
-      canvas.parentElement.appendChild(empty);
-    }
-    return;
-  } else {
-    canvas.style.display = '';
-    const empty = canvas.parentElement.querySelector('.empty-chart');
-    if (empty) empty.remove();
-  }
-
-  const labels = slices.map(s => s.label);
-  const values = slices.map(s => s.value);
-  const colors = slices.map(s => s.color);
-
-  if (pieChart) {
-    pieChart.data.labels = labels;
-    pieChart.data.datasets[0].data = values;
-    pieChart.data.datasets[0].backgroundColor = colors;
-    pieChart.update();
-    return;
-  }
-
-  pieChart = new Chart(canvas, {
-    type: 'pie',
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        backgroundColor: colors,
-        borderColor: '#ffffff',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: {
-        animateRotate: false,
-        animateScale: false,
-        duration: 250,
-        easing: 'easeOutQuad'
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => {
-              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-              const pct = ((ctx.parsed / total) * 100).toFixed(1);
-              return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
-            }
-          }
-        }
-      }
-    }
-  });
-}
-
-// ===== Экспорт / импорт =====
-function downloadJSON(filename, obj) {
-  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function exportFile() {
-  downloadJSON('loot.json', data);
-  setTimeout(() => downloadJSON('catalog.json', catalog), 200);
-}
-
-document.getElementById('fileInput').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const parsed = JSON.parse(ev.target.result);
-      if (typeof parsed !== 'object' || Array.isArray(parsed))
-        throw new Error('ожидался объект');
-
-      const looksLikeCatalog = Array.isArray(parsed.text) || Array.isArray(parsed.super) || parsed.notes;
-      const looksLikeData = ('phil' in parsed) || ('shao' in parsed);
-
-      if (looksLikeCatalog && !looksLikeData) {
-        if (!confirm('Похоже на catalog.json — заменить текущий каталог (включая заметки)?')) {
-          e.target.value = ''; return;
-        }
-        catalog = parsed;
-        Object.keys(CATEGORIES).forEach(k => { if (!Array.isArray(catalog[k])) catalog[k] = []; });
-        catalog.notes = normalizeNotes(catalog.notes);
-        renderCatalogSelect();
-        render();
-      } else {
-        if (!confirm('Похоже на loot.json — заменить текущие данные?')) {
-          e.target.value = ''; return;
-        }
-        data = parsed;
-        ACCOUNTS.forEach(a => { if (!Array.isArray(data[a.id])) data[a.id] = []; });
-        render();
-      }
-    } catch (err) {
-      alert('Ошибка файла: ' + err.message);
-    }
-    e.target.value = '';
-  };
-  reader.readAsText(file);
-});
-
-// ===== Утилиты =====
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-}
-
-init();
