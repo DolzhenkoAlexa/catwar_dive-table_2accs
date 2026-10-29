@@ -68,7 +68,7 @@ let superGrouped = true;
 
 let addLocation = 'sea';
 let chartLocation = 'all';
-let selectedAddDate = ''; // выбранная дата в YYYY-MM-DD (пусто = сегодня)
+let selectedAddDate = ''; // формат YYYY-MM-DD
 
 let filterFrom = '';
 let filterTo   = '';
@@ -78,6 +78,15 @@ async function init() {
   await Promise.all([loadCatalog(), loadData()]);
   ACCOUNTS.forEach(a => { if (!Array.isArray(data[a.id])) data[a.id] = []; });
   catalog.notes = normalizeNotes(catalog.notes);
+  
+  // Устанавливаем сегодняшнюю дату по умолчанию
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  selectedAddDate = `${yyyy}-${mm}-${dd}`;
+  document.getElementById('addDate').value = selectedAddDate;
+
   renderAccounts();
   renderCatalogSelect();
   updateToggles();
@@ -86,9 +95,6 @@ async function init() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeNotesModal();
   });
-  
-  // Инициализация кнопки даты
-  updateDateBtn();
 }
 
 async function loadCatalog() {
@@ -138,59 +144,8 @@ function isItemInLocation(item, location) {
 }
 
 // ===== Работа с датой добавления =====
-function formatDateRu(dateStr) {
-  if (!dateStr) return 'сегодня';
-  const [y, m, d] = dateStr.split('-');
-  return `${d}.${m}.${y}`;
-}
-
-function updateDateBtn() {
-  const label = document.getElementById('dateBtnLabel');
-  const resetBtn = document.getElementById('resetDateBtn');
-  
-  if (label) label.textContent = `Дата: ${formatDateRu(selectedAddDate)}`;
-  
-  if (resetBtn) {
-    // Показываем крестик сброса только если дата выбрана (не пустая)
-    resetBtn.style.display = selectedAddDate ? 'block' : 'none';
-  }
-}
-
-function openDatePicker(e) {
-  if (e) e.preventDefault();
-  const input = document.getElementById('addDate');
-  if (!input) return;
-  
-  // Если дата не выбрана, ставим сегодняшнюю по умолчанию в календарике
-  if (!selectedAddDate) {
-    const today = new Date().toISOString().split('T')[0];
-    input.value = today;
-  } else {
-    input.value = selectedAddDate;
-  }
-  
-  // Вызываем нативный календарь
-  if (input.showPicker) {
-    try { input.showPicker(); } catch (err) {}
-  } else {
-    input.focus(); // фолбэк для старых браузеров
-  }
-}
-
 function onDateChange(input) {
   selectedAddDate = input.value;
-  updateDateBtn();
-}
-
-function resetAddDate(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  selectedAddDate = '';
-  const input = document.getElementById('addDate');
-  if (input) input.value = '';
-  updateDateBtn();
 }
 
 // ===== Фильтр по датам (для таблицы справа) =====
@@ -342,7 +297,7 @@ function addDrop() {
   let timestamp = new Date().toISOString(); // по умолчанию - сейчас
   
   if (selectedAddDate) {
-    // Если дата выбрана, берем её, но время ставим текущее
+    // Берем выбранную дату, но время ставим текущее
     const now = new Date();
     const selectedDate = new Date(selectedAddDate + 'T00:00:00');
     selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
@@ -356,7 +311,7 @@ function addDrop() {
     at: timestamp
   });
   
-  // Дату НЕ сбрасываем, чтобы можно было быстро вносить лут за вчерашний день
+  // Дату НЕ сбрасываем
   render();
 }
 
