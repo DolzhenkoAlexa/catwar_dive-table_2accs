@@ -68,6 +68,7 @@ let superGrouped = true;
 
 let addLocation = 'sea';
 let chartLocation = 'all';
+let selectedAddDate = ''; // выбранная дата в YYYY-MM-DD (пусто = сегодня)
 
 let filterFrom = '';
 let filterTo   = '';
@@ -85,6 +86,9 @@ async function init() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeNotesModal();
   });
+  
+  // Инициализация кнопки даты
+  updateDateBtn();
 }
 
 async function loadCatalog() {
@@ -110,7 +114,7 @@ async function loadData() {
   }
 }
 
-// ===== Заметки: нормализация формата =====
+// ===== Заметки: нормализация =====
 function normalizeNotes(raw) {
   const result = {};
   ACCOUNTS.forEach(a => result[a.id] = []);
@@ -133,7 +137,63 @@ function isItemInLocation(item, location) {
   return locs.includes(location);
 }
 
-// ===== Фильтр по датам =====
+// ===== Работа с датой добавления =====
+function formatDateRu(dateStr) {
+  if (!dateStr) return 'сегодня';
+  const [y, m, d] = dateStr.split('-');
+  return `${d}.${m}.${y}`;
+}
+
+function updateDateBtn() {
+  const label = document.getElementById('dateBtnLabel');
+  const resetBtn = document.getElementById('resetDateBtn');
+  
+  if (label) label.textContent = `Дата: ${formatDateRu(selectedAddDate)}`;
+  
+  if (resetBtn) {
+    // Показываем крестик сброса только если дата выбрана (не пустая)
+    resetBtn.style.display = selectedAddDate ? 'block' : 'none';
+  }
+}
+
+function openDatePicker(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('addDate');
+  if (!input) return;
+  
+  // Если дата не выбрана, ставим сегодняшнюю по умолчанию в календарике
+  if (!selectedAddDate) {
+    const today = new Date().toISOString().split('T')[0];
+    input.value = today;
+  } else {
+    input.value = selectedAddDate;
+  }
+  
+  // Вызываем нативный календарь
+  if (input.showPicker) {
+    try { input.showPicker(); } catch (err) {}
+  } else {
+    input.focus(); // фолбэк для старых браузеров
+  }
+}
+
+function onDateChange(input) {
+  selectedAddDate = input.value;
+  updateDateBtn();
+}
+
+function resetAddDate(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  selectedAddDate = '';
+  const input = document.getElementById('addDate');
+  if (input) input.value = '';
+  updateDateBtn();
+}
+
+// ===== Фильтр по датам (для таблицы справа) =====
 function localDate(iso) {
   const d = new Date(iso);
   const y = d.getFullYear();
@@ -256,7 +316,7 @@ function switchAddLocation(id) {
   renderCatalogSelect();
 }
 
-// ===== Каталог (список добавления) =====
+// ===== Каталог =====
 function renderCatalogSelect() {
   const sel = document.getElementById('catalogSelect');
   const groups = [];
@@ -278,12 +338,25 @@ function addDrop() {
   const raw = document.getElementById('catalogSelect').value;
   if (!raw) return;
   const [cat, id] = raw.split('::');
+  
+  let timestamp = new Date().toISOString(); // по умолчанию - сейчас
+  
+  if (selectedAddDate) {
+    // Если дата выбрана, берем её, но время ставим текущее
+    const now = new Date();
+    const selectedDate = new Date(selectedAddDate + 'T00:00:00');
+    selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+    timestamp = selectedDate.toISOString();
+  }
+
   data[currentAccount].unshift({
     catalogId: id,
     category: cat,
     location: addLocation,
-    at: new Date().toISOString()
+    at: timestamp
   });
+  
+  // Дату НЕ сбрасываем, чтобы можно было быстро вносить лут за вчерашний день
   render();
 }
 
@@ -305,7 +378,7 @@ function findInCatalog(catalogId) {
   return null;
 }
 
-// ===== Переключатели (график) =====
+// ===== Переключатели =====
 function toggleNeg() { negGrouped = !negGrouped; updateToggles(); renderChart(); }
 function togglePos() { posGrouped = !posGrouped; updateToggles(); renderChart(); }
 function toggleSuper() { superGrouped = !superGrouped; updateToggles(); renderChart(); }
@@ -498,7 +571,6 @@ function renderChart() {
   const posCounts = {};
   const superCounts = {};
   
-  // Для негатива используем объекты для подсчета и сбора уникальных имен
   const negData = {};
   NEG_GROUPS.forEach(g => {
     negData[g.key] = { count: 0, names: new Set() };
@@ -534,7 +606,6 @@ function renderChart() {
       const g = NEG_GROUPS.find(x => x.match(item.name));
       if (g) {
         negData[g.key].count++;
-        // Собираем короткие имена (Краб, Рак и т.д.)
         negData[g.key].names.add(getShortNegName(item.name));
       } else {
         negOther++;
@@ -576,7 +647,6 @@ function renderChart() {
     NEG_GROUPS.forEach(g => {
       const data = negData[g.key];
       if (data.count > 0) {
-        // Сортируем имена для постоянного порядка
         const namesArr = Array.from(data.names).sort();
         const labelStr = formatNames(namesArr);
         slices.push({
