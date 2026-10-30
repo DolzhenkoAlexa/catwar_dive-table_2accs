@@ -1,60 +1,324 @@
 {
   "notes": {
-    "phil": ["10 октября: 4 ЗУ и 6 ПУ"],
-    "shao": ["10 октября: 0 ЗУ и 6 ПУ"]
+    "phil": [
+      "10 октября: 4 ЗУ и 6 ПУ",
+      "29 октября: 7 ЗУ и 6 ПУ"
+    ],
+    "shao": [
+      "10 октября: 0 ЗУ и 6 ПУ"
+    ]
   },
   "text": [
-    { "id": "txt_generic", "name": "Текстовое событие", "locations": ["sea", "river"] }
+    {
+      "id": "txt_generic",
+      "name": "Текстовое событие",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    }
   ],
   "neutral": [
-    { "id": "neu_salmon",    "name": "Коралловый лосось",   "image": "korallosos.png" },
-    { "id": "neu_lucian",    "name": "Жёлто-синий луциан",  "image": "yellowblue.png" },
-    { "id": "neu_surgeon",   "name": "Хирурговая рыба",     "image": "hirirrg.png" },
-    { "id": "neu_clown",     "name": "Рыба-клоун",          "image": "clownfish.png" },
-    { "id": "neu_sigan",     "name": "Сиган",               "image": "sigan.png" },
-    { "id": "neu_butterfly", "name": "Рыба-бабочка",        "image": "babochkafish.png" },
-    
-    { "id": "neu_karas",     "name": "Карась",              "image": "karas.png", "locations": ["river"] },
-    { "id": "neu_sazan",     "name": "Сазан",               "image": "sazan.png", "locations": ["river"] },
-    { "id": "neu_forel",     "name": "Форель",              "image": "forel.png", "locations": ["river"] },
-    { "id": "neu_beliyamur", "name": "Белый амур",          "image": "beliyamur.png", "locations": ["river"] },
-    { "id": "neu_cherniyokun","name": "Черный окунь",       "image": "cherniyokun.png", "locations": ["river"] },
-    { "id": "neu_tolstolobik","name": "Толстолобик",        "image": "tolstolobik.png", "locations": ["river"] }
+    {
+      "id": "neu_salmon",
+      "name": "Коралловый лосось",
+      "image": "korallosos.png"
+    },
+    {
+      "id": "neu_lucian",
+      "name": "Жёлто-синий луциан",
+      "image": "yellowblue.png"
+    },
+    {
+      "id": "neu_surgeon",
+      "name": "Хирурговая рыба",
+      "image": "hirirrg.png"
+    },
+    {
+      "id": "neu_clown",
+      "name": "Рыба-клоун",
+      "image": "clownfish.png"
+    },
+    {
+      "id": "neu_sigan",
+      "name": "Сиган",
+      "image": "sigan.png"
+    },
+    {
+      "id": "neu_butterfly",
+      "name": "Рыба-бабочка",
+      "image": "babochkafish.png"
+    },
+    {
+      "id": "neu_karas",
+      "name": "Карась",
+      "image": "karas.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "neu_sazan",
+      "name": "Сазан",
+      "image": "sazan.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "neu_forel",
+      "name": "Форель",
+      "image": "forel.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "neu_beliyamur",
+      "name": "Белый амур",
+      "image": "beliyamur.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "neu_cherniyokun",
+      "name": "Черный окунь",
+      "image": "cherniyokun.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "neu_tolstolobik",
+      "name": "Толстолобик",
+      "image": "tolstolobik.png",
+      "locations": [
+        "river"
+      ]
+    }
   ],
   "positive": [
-    { "id": "pos_moss",        "name": "Обычный мох",                 "image": "moh.png", "locations": ["sea", "river"] },
-    { "id": "pos_watermoss",   "name": "Наполненный водой мох",       "image": "watermoh.png", "locations": ["sea", "river"] },
-    { "id": "pos_tiny_stone",  "name": "Крошечный камень",            "image": "verysmallstone.png", "locations": ["sea", "river"] },
-    { "id": "pos_small_stone", "name": "Небольшой камень",            "image": "smallstone.png", "locations": ["sea", "river"] },
-    { "id": "pos_stone",       "name": "Камень",                      "image": "stone.png", "locations": ["sea", "river"] },
-    { "id": "pos_kom",         "name": "Ком из веток и водорослей",   "image": "kom.png", "locations": ["sea", "river"] }
+    {
+      "id": "pos_moss",
+      "name": "Обычный мох",
+      "image": "moh.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    },
+    {
+      "id": "pos_watermoss",
+      "name": "Наполненный водой мох",
+      "image": "watermoh.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    },
+    {
+      "id": "pos_tiny_stone",
+      "name": "Крошечный камень",
+      "image": "verysmallstone.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    },
+    {
+      "id": "pos_small_stone",
+      "name": "Небольшой камень",
+      "image": "smallstone.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    },
+    {
+      "id": "pos_stone",
+      "name": "Камень",
+      "image": "stone.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    },
+    {
+      "id": "pos_kom",
+      "name": "Ком из веток и водорослей",
+      "image": "kom.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    }
   ],
   "super": [
-    { "id": "pos_dense",       "name": "Плотная водоросль",            "image": "plotnayaodorosl.png", "locations": ["sea", "river"] },
-    { "id": "pos_healing",     "name": "Целебная водоросль",           "image": "celebnayaodorosl.png" },
-    { "id": "pos_branch",      "name": "Крепкая ветка",                "image": "krepkayavetka.png", "locations": ["sea", "river"] },
-    { "id": "pos_coral_1",     "name": "Алый коралл (+20 ПУ)",         "image": "redcoral1.png" },
-    { "id": "pos_coral_2",     "name": "Алый коралл (+30 ПУ)",         "image": "redcoral2.png" },
-    { "id": "pos_seaweed_1",   "name": "Лист морской водоросли (-8 сна)", "image": "listseaodorosl1.png" },
-    { "id": "pos_seaweed_2",   "name": "Лист морской водоросли (+15 ПУ)", "image": "listseaodorosl2.png" },
-    { "id": "pos_seaweed_3",   "name": "Лист морской водоросли (+28 ПУ)", "image": "listseaodorosl3.png" },
-    { "id": "pos_iskra",       "name": "Искра",                        "image": "iskra.png", "locations": ["sea", "river"] },
-    
-    { "id": "pos_shell_o1",    "name": "Оранжевая ракушка (+20 ПУ)",      "image": "orange_shell1.png", "locations": ["river"] },
-    { "id": "pos_shell_o2",    "name": "Оранжевая ракушка (+30 ПУ)",      "image": "orange_shell2.png", "locations": ["river"] },
-    { "id": "pos_shell_b1",    "name": "Голубая ракушка (+15 ПУ)",        "image": "blue_shell1.png", "locations": ["river"] },
-    { "id": "pos_shell_b2",    "name": "Голубая ракушка (+28 ПУ)",        "image": "blue_shell2.png", "locations": ["river"] },
-    { "id": "pos_shell_b3",    "name": "Голубая ракушка (-8 сна)",        "image": "blue_shell3.png", "locations": ["river"] },
-    { "id": "pos_healing_reka","name": "Целебная водоросль",           "image": "celeb nayaodorosl_reka.png", "locations": ["river"] }
+    {
+      "id": "pos_dense",
+      "name": "Плотная водоросль",
+      "image": "plotnayaodorosl.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    },
+    {
+      "id": "pos_healing",
+      "name": "Целебная водоросль",
+      "image": "celebnayaodorosl.png"
+    },
+    {
+      "id": "pos_branch",
+      "name": "Крепкая ветка",
+      "image": "krepkayavetka.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    },
+    {
+      "id": "pos_coral_1",
+      "name": "Алый коралл (+20 ПУ)",
+      "image": "redcoral1.png"
+    },
+    {
+      "id": "pos_coral_2",
+      "name": "Алый коралл (+30 ПУ)",
+      "image": "redcoral2.png"
+    },
+    {
+      "id": "pos_seaweed_1",
+      "name": "Лист морской водоросли (-8 сна)",
+      "image": "listseaodorosl1.png"
+    },
+    {
+      "id": "pos_seaweed_2",
+      "name": "Лист морской водоросли (+15 ПУ)",
+      "image": "listseaodorosl2.png"
+    },
+    {
+      "id": "pos_seaweed_3",
+      "name": "Лист морской водоросли (+28 ПУ)",
+      "image": "listseaodorosl3.png"
+    },
+    {
+      "id": "pos_iskra",
+      "name": "Искра",
+      "image": "iskra.png",
+      "locations": [
+        "sea",
+        "river"
+      ]
+    },
+    {
+      "id": "pos_shell_o1",
+      "name": "Оранжевая ракушка (+20 ПУ)",
+      "image": "orange_shell1.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "pos_shell_o2",
+      "name": "Оранжевая ракушка (+30 ПУ)",
+      "image": "orange_shell2.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "pos_shell_b1",
+      "name": "Голубая ракушка (+15 ПУ)",
+      "image": "blue_shell1.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "pos_shell_b2",
+      "name": "Голубая ракушка (+28 ПУ)",
+      "image": "blue_shell2.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "pos_shell_b3",
+      "name": "Голубая ракушка (-8 сна)",
+      "image": "blue_shell3.png",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "pos_healing_reka",
+      "name": "Целебная водоросль",
+      "image": "celeb nayaodorosl_reka.png",
+      "locations": [
+        "river"
+      ]
+    }
   ],
   "negative": [
-    { "id": "neg_crab_1", "name": "Живой краб",    "image": "3975.png", "damage": 5,  "effect": "раны" },
-    { "id": "neg_ray_1",  "name": "Живой скат",    "image": "3981.png", "damage": 10, "effect": "переломы" },
-    { "id": "neg_snake",  "name": "Морская змея",  "image": "3985.png", "damage": 10, "effect": "отравление" },
-    { "id": "neg_jelly",  "name": "Медуза",        "image": "3986.png", "damage": 10, "effect": "отравление" },
-    
-    { "id": "neg_rak",    "name": "Живой рак",     "image": "rak.png",  "damage": 5,  "effect": "раны", "locations": ["river"] },
-    { "id": "neg_zhaba",  "name": "Зеленая жаба",  "image": "zhaba.png","damage": 10, "effect": "отравление", "locations": ["river"] },
-    { "id": "neg_ygor",   "name": "Живой угорь",   "image": "ygor.png", "damage": 10, "effect": "переломы", "locations": ["river"] }
+    {
+      "id": "neg_crab_1",
+      "name": "Живой краб",
+      "image": "3975.png",
+      "damage": 5,
+      "effect": "раны"
+    },
+    {
+      "id": "neg_ray_1",
+      "name": "Живой скат",
+      "image": "3981.png",
+      "damage": 10,
+      "effect": "переломы"
+    },
+    {
+      "id": "neg_snake",
+      "name": "Морская змея",
+      "image": "3985.png",
+      "damage": 10,
+      "effect": "отравление"
+    },
+    {
+      "id": "neg_jelly",
+      "name": "Медуза",
+      "image": "3986.png",
+      "damage": 10,
+      "effect": "отравление"
+    },
+    {
+      "id": "neg_rak",
+      "name": "Живой рак",
+      "image": "rak.png",
+      "damage": 5,
+      "effect": "раны",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "neg_zhaba",
+      "name": "Зеленая жаба",
+      "image": "zhaba.png",
+      "damage": 10,
+      "effect": "отравление",
+      "locations": [
+        "river"
+      ]
+    },
+    {
+      "id": "neg_ygor",
+      "name": "Живой угорь",
+      "image": "ygor.png",
+      "damage": 10,
+      "effect": "переломы",
+      "locations": [
+        "river"
+      ]
+    }
   ]
 }
