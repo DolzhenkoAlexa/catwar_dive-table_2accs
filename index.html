@@ -38,6 +38,7 @@
         <section class="card chart-card">
           <div class="chart-head">
             <h2>Соотношение лута</h2>
+            <button class="expand-btn" id="expandBtn" onclick="toggleFullscreenChart()" title="Развернуть на весь экран">⛶</button>
           </div>
           <div class="chart-toggles">
             <button id="togglePos" class="toggle active" onclick="togglePos()"></button>
@@ -45,13 +46,12 @@
             <button id="toggleNeg" class="toggle active" onclick="toggleNeg()"></button>
             <button id="toggleLoc" class="toggle active" onclick="toggleLoc()"></button>
           </div>
-          <div class="chart-wrap">
+          <div class="chart-wrap" id="chartWrap">
             <canvas id="pieChart"></canvas>
           </div>
         </section>
 
         <section class="card add-card">
-          <!-- Заголовок и дата на одной строке -->
           <div class="add-header">
             <h2>Добавить лут</h2>
             <label class="add-date-label">
@@ -60,7 +60,6 @@
             </label>
           </div>
           
-          <!-- Строка добавления -->
           <div class="add-row">
             <select id="catalogSelect"></select>
             <button class="primary" onclick="addDrop()">+</button>
@@ -110,6 +109,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=26"></script>
+  <script src="app.js?v=27"></script>
 </body>
 </html>
