@@ -312,24 +312,60 @@ header h1 {
 /* Полноэкранный режим для графика */
 .chart-card.fullscreen {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   z-index: 1000;
   border-radius: 0;
-  padding: 1.5rem;
   background: var(--bg);
-  display: flex;
-  flex-direction: column;
+  padding: 1.5rem;
+  
+  /* Используем Grid для разделения на левую колонку (фильтры) и правую (график) */
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 1rem;
 }
-.chart-card.fullscreen .chart-head h2 { font-size: 1.3rem; }
+
+.chart-card.fullscreen .chart-head {
+  grid-column: 1 / -1; /* Заголовок и крестик растягиваются на всю ширину */
+  margin-bottom: 0;
+}
+
+.chart-card.fullscreen .chart-head h2 {
+  font-size: 1.3rem;
+}
+
+/* Крестик теперь серый, а при наведении темнеет */
 .chart-card.fullscreen .expand-btn {
   font-size: 1.6rem;
-  color: var(--c-negative);
+  color: var(--text-dim);
+  transition: color 0.15s;
 }
+.chart-card.fullscreen .expand-btn:hover {
+  color: var(--text);
+}
+
+/* Выстраиваем фильтры вертикально в левой колонке */
+.chart-card.fullscreen .chart-toggles {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+/* Сам график занимает всю правую колонку */
 .chart-card.fullscreen .chart-wrap {
+  grid-column: 2;
+  grid-row: 2;
   max-width: 100%;
   max-height: 100%;
+  width: 100%;
+  height: 100%;
+  margin: 0;
 }
 
 /* добавление */
