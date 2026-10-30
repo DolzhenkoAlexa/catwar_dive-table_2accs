@@ -21,20 +21,20 @@ const POS_GROUPS = [
     match: n => n === 'Небольшой камень' },
   { key: 'stone_l', label: 'Камень',             color: '#90a4ae',
     match: n => n === 'Камень' },
-  { key: 'kom',     label: 'Ком из веток и водорослей', color: '#2e7d32', // БЫЛО #00e676
+  { key: 'kom',     label: 'Ком из веток и водорослей', color: '#2e7d32',
     match: n => n === 'Ком из веток и водорослей' }
 ];
 
 const SUPER_GROUPS = [
-  { key: 'dense',        label: 'Плотная водоросль',   color: '#00e676', // БЫЛО #4caf50
+  { key: 'dense',        label: 'Плотная водоросль',   color: '#00e676',
     match: n => n === 'Плотная водоросль' },
-  { key: 'healing',      label: 'Целебная водоросль',  color: '#4caf50', // БЫЛО #2e7d32
+  { key: 'healing',      label: 'Целебная водоросль',  color: '#4caf50',
     match: n => n.startsWith('Целебная водоросль') },
   { key: 'branch',       label: 'Крепкая ветка',       color: '#8d6e63',
     match: n => n === 'Крепкая ветка' },
-  { key: 'coral',        label: 'Алые кораллы',        color: '#FF4D3A', // НОВЫЙ
+  { key: 'coral',        label: 'Алые кораллы',        color: '#FF4D3A',
     match: n => n.startsWith('Алый коралл') },
-  { key: 'seaweed',      label: 'Листы водорослей',    color: '#9E3C7C', // НОВЫЙ
+  { key: 'seaweed',      label: 'Листы водорослей',    color: '#9E3C7C',
     match: n => n.startsWith('Лист морской водоросли') },
   { key: 'iskra',        label: 'Искра',               color: '#ffee00',
     match: n => n === 'Искра' },
@@ -45,11 +45,11 @@ const SUPER_GROUPS = [
 ];
 
 const NEG_GROUPS = [
-  { key: 'wounds',    label: 'Раны',       color: '#790000', // НОВЫЙ
+  { key: 'wounds',    label: 'Раны',       color: '#790000',
     match: n => n.startsWith('Живой краб') || n === 'Живой рак' },
-  { key: 'fractures', label: 'Переломы',   color: '#B20000', // НОВЫЙ
+  { key: 'fractures', label: 'Переломы',   color: '#B20000',
     match: n => n.startsWith('Живой скат') || n.startsWith('Живой электрический скат') || n === 'Живой угорь' },
-  { key: 'poison',    label: 'Отравление', color: '#D80000', // НОВЫЙ
+  { key: 'poison',    label: 'Отравление', color: '#D80000',
     match: n => n === 'Морская змея' || n === 'Медуза' || n === 'Зеленая жаба' }
 ];
 
@@ -58,7 +58,7 @@ const DATA_URL    = 'data/loot.json';
 const IMAGES_DIR  = 'images/';
 
 // ===== Состояние =====
-let catalog = { text: [], neutral: [], positive: [], super: [], negative: [] }; // notes убрали
+let catalog = { text: [], neutral: [], positive: [], super: [], negative: [] }; 
 let data = { notes: {} };
 let currentAccount = ACCOUNTS[0].id;
 let pieChart = null;
@@ -68,7 +68,7 @@ let superGrouped = true;
 
 let addLocation = 'sea';
 let chartLocation = 'all';
-let selectedAddDate = ''; // формат YYYY-MM-DD
+let selectedAddDate = ''; 
 
 let filterFrom = '';
 let filterTo   = '';
@@ -77,9 +77,8 @@ let filterTo   = '';
 async function init() {
   await Promise.all([loadCatalog(), loadData()]);
   ACCOUNTS.forEach(a => { if (!Array.isArray(data[a.id])) data[a.id] = []; });
-  data.notes = normalizeNotes(data.notes); // <--- Теперь в data
+  data.notes = normalizeNotes(data.notes); 
   
-  // Устанавливаем сегодняшнюю дату по умолчанию
   const today = new Date();
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -93,7 +92,14 @@ async function init() {
   render();
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeNotesModal();
+    if (e.key === 'Escape') {
+      closeNotesModal();
+      // Закрываем полноэкранный график, если он открыт
+      const chartCard = document.querySelector('.chart-card');
+      if (chartCard && chartCard.classList.contains('fullscreen')) {
+        toggleFullscreenChart();
+      }
+    }
   });
 }
 
@@ -147,7 +153,7 @@ function onDateChange(input) {
   selectedAddDate = input.value;
 }
 
-// ===== Фильтр по датам (для таблицы справа) =====
+// ===== Фильтр по датам =====
 function localDate(iso) {
   const d = new Date(iso);
   const y = d.getFullYear();
@@ -211,7 +217,7 @@ function closeNotesModal(e) {
 
 function renderNotesList() {
   const list = document.getElementById('notesList');
-  const notes = (data.notes && data.notes[currentAccount]) || []; // <--- Берем из data
+  const notes = (data.notes && data.notes[currentAccount]) || []; 
   const accName = ACCOUNTS.find(a => a.id === currentAccount).name;
 
   const header = `<div class="notes-owner">Заметки: <b>${escapeHtml(accName)}</b></div>`;
@@ -234,14 +240,14 @@ function addNote() {
   if (!text) return;
   if (!data.notes || typeof data.notes !== 'object') data.notes = {};
   if (!Array.isArray(data.notes[currentAccount])) data.notes[currentAccount] = [];
-  data.notes[currentAccount].push(text); // <--- Пишем в data
+  data.notes[currentAccount].push(text);
   input.value = '';
   renderNotesList();
 }
 
 function removeNote(index) {
   if (!data.notes || !Array.isArray(data.notes[currentAccount])) return;
-  data.notes[currentAccount].splice(index, 1); // <--- Удаляем из data
+  data.notes[currentAccount].splice(index, 1); 
   renderNotesList();
 }
 
@@ -371,6 +377,28 @@ function updateToggles() {
     }
     btnL.classList.toggle('active', chartLocation !== 'all');
   }
+}
+
+// ===== Полноэкранный режим =====
+function toggleFullscreenChart() {
+  const card = document.querySelector('.chart-card');
+  const btn = document.getElementById('expandBtn');
+  const isFullscreen = card.classList.toggle('fullscreen');
+  
+  if (isFullscreen) {
+    btn.textContent = '✕';
+    btn.title = 'Свернуть';
+    document.body.style.overflow = 'hidden';
+  } else {
+    btn.textContent = '⛶';
+    btn.title = 'Развернуть на весь экран';
+    document.body.style.overflow = '';
+  }
+  
+  // Небольшая задержка, чтобы Chart.js успел пересчитать размеры
+  setTimeout(() => {
+    if (pieChart) pieChart.resize();
+  }, 50);
 }
 
 // ===== Рендер =====
@@ -692,7 +720,6 @@ function downloadJSON(filename, obj) {
   URL.revokeObjectURL(url);
 }
 
-// Скачиваем ТОЛЬКО ОДИН ФАЙЛ
 function exportFile() {
   downloadJSON('loot.json', data); 
 }
@@ -707,7 +734,6 @@ document.getElementById('fileInput').addEventListener('change', e => {
       if (typeof parsed !== 'object' || Array.isArray(parsed))
         throw new Error('ожидался объект');
 
-      // Проверяем: если есть массивы text/super и нет аккаунтов - это каталог
       const looksLikeCatalog = Array.isArray(parsed.text) && Array.isArray(parsed.super) && !parsed.phil;
       const looksLikeData = ('phil' in parsed) || ('shao' in parsed) || ('notes' in parsed);
 
