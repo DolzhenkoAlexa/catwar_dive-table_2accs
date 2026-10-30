@@ -26,15 +26,15 @@ const POS_GROUPS = [
 ];
 
 const SUPER_GROUPS = [
-  { key: 'dense',        label: 'Плотная водоросль',   color: '#00e676',
+  { key: 'dense',        label: 'Плотная водоросль',   color: '#00e676', 
     match: n => n === 'Плотная водоросль' },
-  { key: 'healing',      label: 'Целебная водоросль',  color: '#4caf50',
+  { key: 'healing',      label: 'Целебная водоросль',  color: '#4caf50', 
     match: n => n.startsWith('Целебная водоросль') },
   { key: 'branch',       label: 'Крепкая ветка',       color: '#8d6e63',
     match: n => n === 'Крепкая ветка' },
-  { key: 'coral',        label: 'Алые кораллы',        color: '#FF4D3A',
+  { key: 'coral',        label: 'Алые кораллы',        color: '#FF4D3A', 
     match: n => n.startsWith('Алый коралл') },
-  { key: 'seaweed',      label: 'Листы водорослей',    color: '#9E3C7C',
+  { key: 'seaweed',      label: 'Листы водорослей',    color: '#9E3C7C', 
     match: n => n.startsWith('Лист морской водоросли') },
   { key: 'iskra',        label: 'Искра',               color: '#ffee00',
     match: n => n === 'Искра' },
@@ -45,11 +45,11 @@ const SUPER_GROUPS = [
 ];
 
 const NEG_GROUPS = [
-  { key: 'wounds',    label: 'Раны',       color: '#790000',
+  { key: 'wounds',    label: 'Раны',       color: '#790000', 
     match: n => n.startsWith('Живой краб') || n === 'Живой рак' },
-  { key: 'fractures', label: 'Переломы',   color: '#B20000',
+  { key: 'fractures', label: 'Переломы',   color: '#B20000', 
     match: n => n.startsWith('Живой скат') || n.startsWith('Живой электрический скат') || n === 'Живой угорь' },
-  { key: 'poison',    label: 'Отравление', color: '#D80000',
+  { key: 'poison',    label: 'Отравление', color: '#D80000', 
     match: n => n === 'Морская змея' || n === 'Медуза' || n === 'Зеленая жаба' }
 ];
 
