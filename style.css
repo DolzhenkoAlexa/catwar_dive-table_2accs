@@ -266,6 +266,18 @@ header h1 {
 
 .chart-head h2 { margin: 0; }
 
+.expand-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.expand-btn:hover { color: var(--accent); }
+
 .chart-card {
   display: flex;
   flex-direction: column;
@@ -297,6 +309,29 @@ header h1 {
   font-size: 0.9rem;
 }
 
+/* Полноэкранный режим для графика */
+.chart-card.fullscreen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  border-radius: 0;
+  padding: 1.5rem;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+.chart-card.fullscreen .chart-head h2 { font-size: 1.3rem; }
+.chart-card.fullscreen .expand-btn {
+  font-size: 1.6rem;
+  color: var(--c-negative);
+}
+.chart-card.fullscreen .chart-wrap {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 /* добавление */
 .add-header {
   display: flex;
@@ -307,9 +342,7 @@ header h1 {
   flex-wrap: wrap;
 }
 
-.add-header h2 {
-  margin: 0;
-}
+.add-header h2 { margin: 0; }
 
 .add-date-label {
   display: flex;
@@ -797,7 +830,6 @@ button.primary:hover { background: var(--accent-dark); }
 
   .chart-wrap { min-height: 280px; }
   
-  /* На мобильных дата может не влезть в одну строку, поэтому переносим */
   .add-header {
     flex-direction: column;
     align-items: flex-start;
