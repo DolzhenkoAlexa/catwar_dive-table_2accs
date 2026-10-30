@@ -66,7 +66,7 @@ let negGrouped = true;
 let posGrouped = true;
 let superGrouped = true;
 
-let addLocation = 'sea';
+let addLocation = 'river';
 let chartLocation = 'all';
 let selectedAddDate = ''; 
 
