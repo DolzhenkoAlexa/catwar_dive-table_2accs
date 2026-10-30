@@ -21,20 +21,20 @@ const POS_GROUPS = [
     match: n => n === 'Небольшой камень' },
   { key: 'stone_l', label: 'Камень',             color: '#90a4ae',
     match: n => n === 'Камень' },
-  { key: 'kom',     label: 'Ком из веток и водорослей', color: '#2e7d32',
+  { key: 'kom',     label: 'Ком из веток и водорослей', color: '#2e7d32', // БЫЛО #00e676
     match: n => n === 'Ком из веток и водорослей' }
 ];
 
 const SUPER_GROUPS = [
-  { key: 'dense',        label: 'Плотная водоросль',   color: '#00e676', 
+  { key: 'dense',        label: 'Плотная водоросль',   color: '#00e676', // БЫЛО #4caf50
     match: n => n === 'Плотная водоросль' },
-  { key: 'healing',      label: 'Целебная водоросль',  color: '#4caf50', 
+  { key: 'healing',      label: 'Целебная водоросль',  color: '#4caf50', // БЫЛО #2e7d32
     match: n => n.startsWith('Целебная водоросль') },
   { key: 'branch',       label: 'Крепкая ветка',       color: '#8d6e63',
     match: n => n === 'Крепкая ветка' },
-  { key: 'coral',        label: 'Алые кораллы',        color: '#FF4D3A', 
+  { key: 'coral',        label: 'Алые кораллы',        color: '#FF4D3A', // НОВЫЙ
     match: n => n.startsWith('Алый коралл') },
-  { key: 'seaweed',      label: 'Листы водорослей',    color: '#9E3C7C', 
+  { key: 'seaweed',      label: 'Листы водорослей',    color: '#9E3C7C', // НОВЫЙ
     match: n => n.startsWith('Лист морской водоросли') },
   { key: 'iskra',        label: 'Искра',               color: '#ffee00',
     match: n => n === 'Искра' },
@@ -45,11 +45,11 @@ const SUPER_GROUPS = [
 ];
 
 const NEG_GROUPS = [
-  { key: 'wounds',    label: 'Раны',       color: '#790000', 
+  { key: 'wounds',    label: 'Раны',       color: '#790000', // НОВЫЙ
     match: n => n.startsWith('Живой краб') || n === 'Живой рак' },
-  { key: 'fractures', label: 'Переломы',   color: '#B20000', 
+  { key: 'fractures', label: 'Переломы',   color: '#B20000', // НОВЫЙ
     match: n => n.startsWith('Живой скат') || n.startsWith('Живой электрический скат') || n === 'Живой угорь' },
-  { key: 'poison',    label: 'Отравление', color: '#D80000', 
+  { key: 'poison',    label: 'Отравление', color: '#D80000', // НОВЫЙ
     match: n => n === 'Морская змея' || n === 'Медуза' || n === 'Зеленая жаба' }
 ];
 
@@ -58,8 +58,8 @@ const DATA_URL    = 'data/loot.json';
 const IMAGES_DIR  = 'images/';
 
 // ===== Состояние =====
-let catalog = { notes: {}, text: [], neutral: [], positive: [], super: [], negative: [] };
-let data = {};
+let catalog = { text: [], neutral: [], positive: [], super: [], negative: [] }; // notes убрали
+let data = { notes: {} };
 let currentAccount = ACCOUNTS[0].id;
 let pieChart = null;
 let negGrouped = true;
@@ -77,7 +77,7 @@ let filterTo   = '';
 async function init() {
   await Promise.all([loadCatalog(), loadData()]);
   ACCOUNTS.forEach(a => { if (!Array.isArray(data[a.id])) data[a.id] = []; });
-  catalog.notes = normalizeNotes(catalog.notes);
+  data.notes = normalizeNotes(data.notes); // <--- Теперь в data
   
   // Устанавливаем сегодняшнюю дату по умолчанию
   const today = new Date();
@@ -103,7 +103,6 @@ async function loadCatalog() {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     catalog = await r.json();
     Object.keys(CATEGORIES).forEach(k => { if (!Array.isArray(catalog[k])) catalog[k] = []; });
-    catalog.notes = normalizeNotes(catalog.notes);
   } catch (e) {
     console.warn('Не удалось загрузить catalog.json:', e.message);
   }
@@ -212,7 +211,7 @@ function closeNotesModal(e) {
 
 function renderNotesList() {
   const list = document.getElementById('notesList');
-  const notes = (catalog.notes && catalog.notes[currentAccount]) || [];
+  const notes = (data.notes && data.notes[currentAccount]) || []; // <--- Берем из data
   const accName = ACCOUNTS.find(a => a.id === currentAccount).name;
 
   const header = `<div class="notes-owner">Заметки: <b>${escapeHtml(accName)}</b></div>`;
@@ -233,16 +232,16 @@ function addNote() {
   const input = document.getElementById('noteInput');
   const text = input.value.trim();
   if (!text) return;
-  if (!catalog.notes || typeof catalog.notes !== 'object') catalog.notes = {};
-  if (!Array.isArray(catalog.notes[currentAccount])) catalog.notes[currentAccount] = [];
-  catalog.notes[currentAccount].push(text);
+  if (!data.notes || typeof data.notes !== 'object') data.notes = {};
+  if (!Array.isArray(data.notes[currentAccount])) data.notes[currentAccount] = [];
+  data.notes[currentAccount].push(text); // <--- Пишем в data
   input.value = '';
   renderNotesList();
 }
 
 function removeNote(index) {
-  if (!catalog.notes || !Array.isArray(catalog.notes[currentAccount])) return;
-  catalog.notes[currentAccount].splice(index, 1);
+  if (!data.notes || !Array.isArray(data.notes[currentAccount])) return;
+  data.notes[currentAccount].splice(index, 1); // <--- Удаляем из data
   renderNotesList();
 }
 
@@ -294,10 +293,9 @@ function addDrop() {
   if (!raw) return;
   const [cat, id] = raw.split('::');
   
-  let timestamp = new Date().toISOString(); // по умолчанию - сейчас
+  let timestamp = new Date().toISOString(); 
   
   if (selectedAddDate) {
-    // Берем выбранную дату, но время ставим текущее
     const now = new Date();
     const selectedDate = new Date(selectedAddDate + 'T00:00:00');
     selectedDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
@@ -311,7 +309,6 @@ function addDrop() {
     at: timestamp
   });
   
-  // Дату НЕ сбрасываем
   render();
 }
 
@@ -695,9 +692,9 @@ function downloadJSON(filename, obj) {
   URL.revokeObjectURL(url);
 }
 
+// Скачиваем ТОЛЬКО ОДИН ФАЙЛ
 function exportFile() {
-  downloadJSON('loot.json', data);
-  setTimeout(() => downloadJSON('catalog.json', catalog), 200);
+  downloadJSON('loot.json', data); 
 }
 
 document.getElementById('fileInput').addEventListener('change', e => {
@@ -710,16 +707,16 @@ document.getElementById('fileInput').addEventListener('change', e => {
       if (typeof parsed !== 'object' || Array.isArray(parsed))
         throw new Error('ожидался объект');
 
-      const looksLikeCatalog = Array.isArray(parsed.text) || Array.isArray(parsed.super) || parsed.notes;
-      const looksLikeData = ('phil' in parsed) || ('shao' in parsed);
+      // Проверяем: если есть массивы text/super и нет аккаунтов - это каталог
+      const looksLikeCatalog = Array.isArray(parsed.text) && Array.isArray(parsed.super) && !parsed.phil;
+      const looksLikeData = ('phil' in parsed) || ('shao' in parsed) || ('notes' in parsed);
 
       if (looksLikeCatalog && !looksLikeData) {
-        if (!confirm('Похоже на catalog.json — заменить текущий каталог (включая заметки)?')) {
+        if (!confirm('Похоже на catalog.json — заменить текущий каталог?')) {
           e.target.value = ''; return;
         }
         catalog = parsed;
         Object.keys(CATEGORIES).forEach(k => { if (!Array.isArray(catalog[k])) catalog[k] = []; });
-        catalog.notes = normalizeNotes(catalog.notes);
         renderCatalogSelect();
         render();
       } else {
@@ -728,6 +725,7 @@ document.getElementById('fileInput').addEventListener('change', e => {
         }
         data = parsed;
         ACCOUNTS.forEach(a => { if (!Array.isArray(data[a.id])) data[a.id] = []; });
+        data.notes = normalizeNotes(data.notes);
         render();
       }
     } catch (err) {
