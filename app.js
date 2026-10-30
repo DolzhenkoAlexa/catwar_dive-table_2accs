@@ -21,20 +21,20 @@ const POS_GROUPS = [
     match: n => n === 'Небольшой камень' },
   { key: 'stone_l', label: 'Камень',             color: '#90a4ae',
     match: n => n === 'Камень' },
-  { key: 'kom',     label: 'Ком из веток и водорослей', color: '#00e676',
+  { key: 'kom',     label: 'Ком из веток и водорослей', color: '#2e7d32',
     match: n => n === 'Ком из веток и водорослей' }
 ];
 
 const SUPER_GROUPS = [
-  { key: 'dense',        label: 'Плотная водоросль',   color: '#4caf50',
+  { key: 'dense',        label: 'Плотная водоросль',   color: '#00e676',
     match: n => n === 'Плотная водоросль' },
-  { key: 'healing',      label: 'Целебная водоросль',  color: '#2e7d32',
+  { key: 'healing',      label: 'Целебная водоросль',  color: '#4caf50',
     match: n => n.startsWith('Целебная водоросль') },
   { key: 'branch',       label: 'Крепкая ветка',       color: '#8d6e63',
     match: n => n === 'Крепкая ветка' },
-  { key: 'coral',        label: 'Алые кораллы',        color: '#ff6f00',
+  { key: 'coral',        label: 'Алые кораллы',        color: '#FF4D3A',
     match: n => n.startsWith('Алый коралл') },
-  { key: 'seaweed',      label: 'Листы водорослей',    color: '#ffb300',
+  { key: 'seaweed',      label: 'Листы водорослей',    color: '#9E3C7C',
     match: n => n.startsWith('Лист морской водоросли') },
   { key: 'iskra',        label: 'Искра',               color: '#ffee00',
     match: n => n === 'Искра' },
@@ -45,11 +45,11 @@ const SUPER_GROUPS = [
 ];
 
 const NEG_GROUPS = [
-  { key: 'wounds',    label: 'Раны',       color: '#b71c1c',
+  { key: 'wounds',    label: 'Раны',       color: '#790000',
     match: n => n.startsWith('Живой краб') || n === 'Живой рак' },
-  { key: 'fractures', label: 'Переломы',   color: '#e53935',
+  { key: 'fractures', label: 'Переломы',   color: '#B20000',
     match: n => n.startsWith('Живой скат') || n.startsWith('Живой электрический скат') || n === 'Живой угорь' },
-  { key: 'poison',    label: 'Отравление', color: '#ef9a9a',
+  { key: 'poison',    label: 'Отравление', color: '#D80000',
     match: n => n === 'Морская змея' || n === 'Медуза' || n === 'Зеленая жаба' }
 ];
 
